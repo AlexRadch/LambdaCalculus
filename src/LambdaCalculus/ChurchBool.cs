@@ -1,7 +1,7 @@
 ﻿namespace LambdaCalculus
 {
     // Bool(true, false) := λt.λf. t|f
-    // True -> False -> True|False
+    // Bool := True -> False -> True|False
     public delegate Func<dynamic, dynamic> Bool(dynamic @true);
 
     public static partial class ChurchBool
