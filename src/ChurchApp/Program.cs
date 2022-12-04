@@ -10,7 +10,7 @@ namespace ChurchApp
         static void Main()
         {
             //BoolEval();
-            //GcdEval();
+            GcdEval();
             //NumEval();
         }
 

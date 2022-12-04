@@ -37,7 +37,7 @@
         public static Func<Num, Num> Add(this Num m) => n => f => z => m(f)(n(f)(z));
         public static Num Add(this Num m, Num n) => f => z => m(f)(n(f)(z));
 
-        // Succ := λ1.λn.λf.λz. 1 f (n f z) := f (n f z)
+        // Succ := λ1.λn.λf.λz. 1 f (n f z) := λn.λf.λz. f (n f z)
         public static Num Succ(this Num n) => f => z => f(n(f)(z));
 
         // Mult = m ∗ n \operatorname{mult}(m, n) = m*n
