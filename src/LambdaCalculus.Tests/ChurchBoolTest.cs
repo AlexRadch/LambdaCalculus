@@ -10,7 +10,7 @@ namespace LambdaCalculus
 
         [Theory]
         [MemberData(nameof(GetDynamicData2))]
-        public void TrueTest(dynamic @true, dynamic @false)
+        public void TrueTest(object @true, object @false)
         {
             Assert.Equal(@true, ChurchBool.True(@true)(@false));
             Assert.Equal(@true, ChurchBool.TrueV(@true)(@false));
@@ -18,7 +18,7 @@ namespace LambdaCalculus
             Assert.Equal(@true.ToString(), ChurchBool.True(@true)(@false).ToString());
             Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true)(@false).ToString());
 
-            Action exception = () => throw new NotImplementedException();
+            object exception = new Action(() => throw new NotImplementedException());
 
             Assert.Equal(@true, ChurchBool.True(@true)(exception));
             Assert.Equal(@true, ChurchBool.TrueV(@true)(exception));
@@ -51,7 +51,7 @@ namespace LambdaCalculus
 
         [Theory]
         [MemberData(nameof(GetDynamicData2))]
-        public void FalseTest(dynamic @true, dynamic @false)
+        public void FalseTest(object @true, object @false)
         {
             Assert.Equal(@false, ChurchBool.False(@true)(@false));
             Assert.Equal(@false, ChurchBool.FalseV(@true)(@false));
@@ -59,7 +59,7 @@ namespace LambdaCalculus
             Assert.Equal(@false.ToString(), ChurchBool.False(@true)(@false).ToString());
             Assert.Equal(@false.ToString(), ChurchBool.FalseV(@true)(@false).ToString());
 
-            Action exception = () => throw new NotImplementedException();
+            object exception = new Action(() => throw new NotImplementedException());
 
             Assert.Equal(@false, ChurchBool.False(exception)(@false));
             Assert.Equal(@false, ChurchBool.FalseV(exception)(@false));
@@ -83,8 +83,8 @@ namespace LambdaCalculus
                 Assert.Equal(result, ChurchBool.Church(value)(@true)(@false));
                 Assert.Equal(result, value.Church()(@true)(@false));
 
-                Assert.Equal((result).ToString(), ChurchBool.Church(value)(@true)(@false).ToString());
-                Assert.Equal((result).ToString(), value.Church()(@true)(@false).ToString());
+                Assert.Equal(result.ToString(), ChurchBool.Church(value)(@true)(@false).ToString());
+                Assert.Equal(result.ToString(), value.Church()(@true)(@false).ToString());
 
 
                 Action exception = () => throw new NotImplementedException();
@@ -94,8 +94,8 @@ namespace LambdaCalculus
                 Assert.Equal(result, ChurchBool.Church(value)(@true2)(@false2));
                 Assert.Equal(result, value.Church()(@true2)(@false2));
 
-                Assert.Equal((result).ToString(), ChurchBool.Church(value)(@true2)(@false2).ToString());
-                Assert.Equal((result).ToString(), value.Church()(@true2)(@false2).ToString());
+                Assert.Equal(result.ToString(), ChurchBool.Church(value)(@true2)(@false2).ToString());
+                Assert.Equal(result.ToString(), value.Church()(@true2)(@false2).ToString());
             }
         }
 

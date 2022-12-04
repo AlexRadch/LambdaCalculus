@@ -10,10 +10,10 @@ namespace LambdaCalculus
         [MemberData(nameof(GetDynamicData1))]
         public void IdTest(dynamic x)
         {
-            Assert.Equal(x, ChurchUnit.Id (x));
+            Assert.Equal(x, ChurchUnit.Id(x));
 
             Assert.Equal(x, ChurchUnit.Id(ChurchUnit.Id(x)) );
-            Assert.Equal(x, ChurchUnit.Id ((object)ChurchUnit.Id) (x) );
+            Assert.Equal(x, ChurchUnit.Id<Func<dynamic, dynamic>>(ChurchUnit.Id)(x));
         }
 
         #region GetData

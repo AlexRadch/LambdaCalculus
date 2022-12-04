@@ -1,7 +1,7 @@
 ﻿namespace LambdaCalculus
 {
-    // Bool := λt.λf. some result
-    // Bool := True -> False -> Result
+    // Bool(true, false) := λt.λf. t|f
+    // True -> False -> True|False
     public delegate Func<dynamic, dynamic> Bool(dynamic @true);
 
     public static partial class ChurchBool
@@ -36,6 +36,8 @@
         // Not := Bool -> Bool
 
         public static Bool Not(this Bool @bool) => @bool(FalseV)(TrueV);
+        // TrueV FalseV can be replaced to new Bool(False) new Bool(True)
+        //public static Bool Not(this Bool @bool) => @bool(new Bool(False))(new Bool(True));
 
         #endregion
 

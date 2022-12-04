@@ -1,17 +1,13 @@
 ﻿namespace LambdaCalculus
 {
-    #region Utility
-
-    // Unit := λx. some logic
-    public delegate dynamic Unit(dynamic value);
-
-
-    #endregion
+    // Unit(x) := λx. some logic
+    // Unit(x) := λx. some logic
+    public delegate TResult Unit<in T, out TResult>(T x); // the same as Func<T, TResult>
 
     public static partial class ChurchUnit
     {
-        // Id := λx.x
-        // Id := T -> T
-        public static dynamic Id(dynamic x) => x;
+        // Id(x) := λx. x
+        // T -> T
+        public static T Id<T>(T x) => x;
     }
 }
