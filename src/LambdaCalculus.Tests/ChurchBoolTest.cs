@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -5,7 +6,7 @@ namespace LambdaCalculus
 {
     public class ChurchBoolTest
     {
-        #region True
+        #region True Tests
 
         [Theory]
         [MemberData(nameof(GetDynamicData2))]
@@ -26,26 +27,27 @@ namespace LambdaCalculus
             Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true)(exception).ToString());
         }
 
-        [Theory]
-        [MemberData(nameof(GetDynamicData2))]
-        public void TrueLazyTest(dynamic @true, dynamic @false)
-        {
-            var concat = (string acc, dynamic b) => { acc += b.ToString(); return acc; };
-            {
-                var acc = "";
-                var r = ChurchBool.True(concat(acc, @true))(concat(acc, @false));
-                Assert.Equal(@true.ToString(), r);
-            }
-            {
-                var acc = "";
-                var r = ChurchBool.TrueV(concat(acc, @true))(concat(acc, @false));
-                Assert.Equal(@true.ToString(), r);
-            }
-        }
+        //[Theory]
+        //[MemberData(nameof(GetDynamicData2))]
+        //public void TrueLazyTest(dynamic @true, dynamic @false)
+        //{
+        //    var acc = "";
+        //    var concat = (dynamic b) => () => acc += b.ToString();
+        //    {
+        //        acc = "";
+        //        var r = ChurchBool.True(concat(@true))(concat(@false))();
+        //        Assert.Equal(@true.ToString(), acc);
+        //    }
+        //    {
+        //        acc = "";
+        //        var r = ChurchBool.TrueV(concat(@true))(concat(@false))();
+        //        Assert.Equal(@true.ToString(), acc);
+        //    }
+        //}
 
         #endregion
 
-        #region False
+        #region False Tests
 
         [Theory]
         [MemberData(nameof(GetDynamicData2))]
@@ -66,26 +68,9 @@ namespace LambdaCalculus
             Assert.Equal(@false.ToString(), ChurchBool.FalseV(exception)(@false).ToString());
         }
 
-        [Theory]
-        [MemberData(nameof(GetDynamicData2))]
-        public void FalseLazyTest(dynamic @true, dynamic @false)
-        {
-            var concat = (string acc, dynamic b) => { acc += b.ToString(); return acc; };
-            {
-                var acc = "";
-                var r = ChurchBool.False(concat(acc, @true))(concat(acc, @false));
-                Assert.Equal(@false.ToString(), r);
-            }
-            {
-                var acc = "";
-                var r = ChurchBool.FalseV(concat(acc, @true))(concat(acc, @false));
-                Assert.Equal(@false.ToString(), r);
-            }
-        }
-
         #endregion
 
-        #region ChurchTest
+        #region Church Tests
 
         [Theory]
         [MemberData(nameof(GetDynamicData2))]
@@ -93,12 +78,24 @@ namespace LambdaCalculus
         {
             foreach (var value in GetBools())
             {
+                var result = value ? @true : @false;
 
-                Assert.Equal(value ? @true : @false, ChurchBool.Church(value)(@true)(@false));
-                Assert.Equal(value ? @true : @false, value.Church()(@true)(@false));
+                Assert.Equal(result, ChurchBool.Church(value)(@true)(@false));
+                Assert.Equal(result, value.Church()(@true)(@false));
 
-                Assert.Equal((value ? @true : @false).ToString(), ChurchBool.Church(value)(@true)(@false).ToString());
-                Assert.Equal((value ? @true : @false).ToString(), value.Church()(@true)(@false).ToString());
+                Assert.Equal((result).ToString(), ChurchBool.Church(value)(@true)(@false).ToString());
+                Assert.Equal((result).ToString(), value.Church()(@true)(@false).ToString());
+
+
+                Action exception = () => throw new NotImplementedException();
+                var @true2 = value ? @true : exception;
+                var @false2 = value ? exception : @false;
+
+                Assert.Equal(result, ChurchBool.Church(value)(@true2)(@false2));
+                Assert.Equal(result, value.Church()(@true2)(@false2));
+
+                Assert.Equal((result).ToString(), ChurchBool.Church(value)(@true2)(@false2).ToString());
+                Assert.Equal((result).ToString(), value.Church()(@true2)(@false2).ToString());
             }
         }
 
@@ -126,19 +123,42 @@ namespace LambdaCalculus
 
         #endregion
 
+        #region If Tests
+
         [Theory]
         [MemberData(nameof(GetDynamicData2))]
         public void IfTest(dynamic @then, dynamic @else)
         {
             foreach (var value in GetBools())
             {
+                var result = value ? @then : @else;
                 var cv = value.Church();
-                Assert.Equal(value ? @then : @else, ChurchBool.If(cv)(@then)(@else));
-                Assert.Equal(value ? @then : @else, cv.If()(@then)(@else));
-                Assert.Equal(value ? @then : @else, ChurchBool.If(cv, @then, @else));
-                Assert.Equal(value ? @then : @else, cv.If((object)@then, (object)@else));
+
+                Assert.Equal(result, ChurchBool.If(cv)(@then)(@else));
+                Assert.Equal(result, cv.If()(@then)(@else));
+                Assert.Equal(result, ChurchBool.If(cv, @then, @else));
+                Assert.Equal(result, cv.If((object)@then, (object)@else));
+
+                // predicate should work them self also
+                Assert.Equal(result, cv(@then)(@else));
+
+                Action exception = () => throw new NotImplementedException();
+                var @then2 = value ? @then : exception;
+                var @else2 = value ? exception : @else;
+
+                Assert.Equal(result, ChurchBool.If(cv)(@then2)(@else2));
+                Assert.Equal(result, cv.If()(@then2)(@else2));
+                Assert.Equal(result, ChurchBool.If(cv, @then2, @else2));
+                Assert.Equal(result, cv.If((object)@then2, (object)@else2));
+
+                // predicate should work them self also
+                Assert.Equal(result, cv(@then2)(@else2));
             }
         }
+
+        #endregion
+
+        #region Operations Tests
 
         [Theory]
         [MemberData(nameof(GetBoolsData))]
@@ -223,7 +243,9 @@ namespace LambdaCalculus
             Assert.Equal(a == b, ca.Eq(cb).Unchurch());
         }
 
-        #region FormulaTest
+        #endregion
+
+        #region Formula Test
 
         [Theory]
         [InlineData(438, 5)]
@@ -269,48 +291,39 @@ namespace LambdaCalculus
             Assert.Equal(bItems[0], cItems[0].Unchurch());
         }
 
-        private static bool EvaluateOp(List<bool> items, BoolOp op, int opIndex)
+        private static bool EvaluateOp(List<bool> items, BoolOp op, int opIndex) => op switch
         {
-            return op switch
-            {
-                BoolOp.Not => !items[opIndex],
-                BoolOp.Or => items[opIndex] || items[opIndex + 1],
-                BoolOp.And => items[opIndex] && items[opIndex + 1],
-                BoolOp.Xor => items[opIndex] ^ items[opIndex + 1],
-                BoolOp.Nor => !(items[opIndex] || items[opIndex + 1]),
-                BoolOp.Nand => !(items[opIndex] && items[opIndex + 1]),
-                BoolOp.Eq => items[opIndex] == items[opIndex + 1],
-                BoolOp.If => items[opIndex] ? items[opIndex + 1] : items[opIndex + 2],
-                _ => throw new NotImplementedException(),
-            };
-        }
+            BoolOp.Not => !items[opIndex],
+            BoolOp.Or => items[opIndex] || items[opIndex + 1],
+            BoolOp.And => items[opIndex] && items[opIndex + 1],
+            BoolOp.Xor => items[opIndex] ^ items[opIndex + 1],
+            BoolOp.Nor => !(items[opIndex] || items[opIndex + 1]),
+            BoolOp.Nand => !(items[opIndex] && items[opIndex + 1]),
+            BoolOp.Eq => items[opIndex] == items[opIndex + 1],
+            BoolOp.If => items[opIndex] ? items[opIndex + 1] : items[opIndex + 2],
+            _ => throw new NotImplementedException(),
+        };
 
-        private static Bool EvaluateOp(List<Bool> items, BoolOp op, int opIndex)
+        private static Bool EvaluateOp(List<Bool> items, BoolOp op, int opIndex) => op switch
         {
-            return op switch
-            {
-                BoolOp.Not => items[opIndex].Not(),
-                BoolOp.Or => items[opIndex].Or(items[opIndex + 1]),
-                BoolOp.And => items[opIndex].And(items[opIndex + 1]),
-                BoolOp.Xor => items[opIndex].Xor(items[opIndex + 1]),
-                BoolOp.Nor => items[opIndex].Nor(items[opIndex + 1]),
-                BoolOp.Nand => items[opIndex].Nand(items[opIndex + 1]),
-                BoolOp.Eq => items[opIndex].Eq(items[opIndex + 1]),
-                BoolOp.If => items[opIndex].If(items[opIndex + 1], items[opIndex + 2]),
-                _ => throw new NotImplementedException(),
-            };
-        }
+            BoolOp.Not => items[opIndex].Not(),
+            BoolOp.Or => items[opIndex].Or(items[opIndex + 1]),
+            BoolOp.And => items[opIndex].And(items[opIndex + 1]),
+            BoolOp.Xor => items[opIndex].Xor(items[opIndex + 1]),
+            BoolOp.Nor => items[opIndex].Nor(items[opIndex + 1]),
+            BoolOp.Nand => items[opIndex].Nand(items[opIndex + 1]),
+            BoolOp.Eq => items[opIndex].Eq(items[opIndex + 1]),
+            BoolOp.If => items[opIndex].If(items[opIndex + 1], items[opIndex + 2]),
+            _ => throw new NotImplementedException(),
+        };
 
-        private static int GetBoolOpLen(BoolOp op)
+        private static int GetBoolOpLen(BoolOp op) => op switch
         {
-            return op switch
-            {
-                BoolOp.Not => 1,
-                BoolOp.Or or BoolOp.And or BoolOp.Xor or BoolOp.Nor or BoolOp.Nand or BoolOp.Eq => 2,
-                BoolOp.If => 3,
-                _ => throw new NotImplementedException(),
-            };
-        }
+            BoolOp.Not => 1,
+            BoolOp.Or or BoolOp.And or BoolOp.Xor or BoolOp.Nor or BoolOp.Nand or BoolOp.Eq => 2,
+            BoolOp.If => 3,
+            _ => throw new NotImplementedException(),
+        };
 
         private enum BoolOp { Not, Or, And, Xor, Nor, Nand, Eq, If }
 
