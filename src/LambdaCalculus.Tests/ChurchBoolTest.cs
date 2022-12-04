@@ -14,17 +14,21 @@ namespace LambdaCalculus
         {
             Assert.Equal(@true, ChurchBool.True(@true)(@false));
             Assert.Equal(@true, ChurchBool.TrueV(@true)(@false));
+            //Assert.Equal(@true, ChurchBool.True(@true, @false));
 
             Assert.Equal(@true.ToString(), ChurchBool.True(@true)(@false).ToString());
             Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true)(@false).ToString());
+            //Assert.Equal(@true.ToString(), ChurchBool.True(@true, @false).ToString());
 
             object exception = new Action(() => throw new NotImplementedException());
 
             Assert.Equal(@true, ChurchBool.True(@true)(exception));
             Assert.Equal(@true, ChurchBool.TrueV(@true)(exception));
+            //Assert.Equal(@true, ChurchBool.True(@true, exception));
 
             Assert.Equal(@true.ToString(), ChurchBool.True(@true)(exception).ToString());
             Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true)(exception).ToString());
+            //Assert.Equal(@true.ToString(), ChurchBool.True(@true, exception).ToString());
         }
 
         //[Theory]
@@ -55,17 +59,21 @@ namespace LambdaCalculus
         {
             Assert.Equal(@false, ChurchBool.False(@true)(@false));
             Assert.Equal(@false, ChurchBool.FalseV(@true)(@false));
+            //Assert.Equal(@false, ChurchBool.False(@true, @false));
 
             Assert.Equal(@false.ToString(), ChurchBool.False(@true)(@false).ToString());
             Assert.Equal(@false.ToString(), ChurchBool.FalseV(@true)(@false).ToString());
+            //Assert.Equal(@false.ToString(), ChurchBool.False(@true, @false).ToString());
 
             object exception = new Action(() => throw new NotImplementedException());
 
             Assert.Equal(@false, ChurchBool.False(exception)(@false));
             Assert.Equal(@false, ChurchBool.FalseV(exception)(@false));
+            //Assert.Equal(@false, ChurchBool.False(exception, @false));
 
             Assert.Equal(@false.ToString(), ChurchBool.False(exception)(@false).ToString());
             Assert.Equal(@false.ToString(), ChurchBool.FalseV(exception)(@false).ToString());
+            //Assert.Equal(@false.ToString(), ChurchBool.False(exception, @false).ToString());
         }
 
         #endregion

@@ -1,6 +1,6 @@
 ﻿namespace LambdaCalculus
 {
-    // Bool(true, false) := λt.λf. t|f
+    // Bool := λt.λf. t|f
     // Bool := True -> False -> True|False
     public delegate Func<dynamic, dynamic> Bool(dynamic @true);
 
@@ -12,11 +12,15 @@
         // True := True -> False -> True
         public static Func<dynamic, dynamic> True(dynamic @true) => @false => @true;
         public static Bool TrueV => True;
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        //public static dynamic True(dynamic @true, dynamic @false) => @true;
 
         // False := λt.λf. f
         // False := True -> False -> False
         public static Func<dynamic, dynamic> False(dynamic @true) => @false => @false;
         public static Bool FalseV => False;
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
+        //public static dynamic False(dynamic @true, dynamic @false) => @false;
 
         #endregion
 
@@ -105,6 +109,8 @@
         public static bool Unchurch(this Bool p) => p(true)(false); // predicate works them self
         //public static bool Unchurch(this Bool p) => p.If()(true)(false); // If should work also
         //public static bool Unchurch(this Bool p) => p.If(true, false); // If should work also
+
+        public static dynamic ToLazy<T>(Func<T> f) => f;
 
         #endregion
     }

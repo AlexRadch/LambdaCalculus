@@ -1,4 +1,5 @@
 ﻿using LambdaCalculus;
+using System.Numerics;
 using static LambdaCalculus.ChurchBool;
 using static LambdaCalculus.ChurchNum;
 
@@ -8,7 +9,9 @@ namespace ChurchApp
     {
         static void Main()
         {
-            NumEval();
+            //BoolEval();
+            //GcdEval();
+            //NumEval();
         }
 
         static void NumEval()
@@ -45,15 +48,67 @@ namespace ChurchApp
             var four = two.Add(two);
             Console.WriteLine(four(inc)(0));
         }
+        static void GcdEval()
+        {
+            {
+                var a = 252;
+                var b = 105;
+                var c1 = Gcd(a, b);
+                var c2 = ChurchGcd2(a, b);
+                var c3 = ChurchGcd1(a)(b);
+
+                Console.WriteLine($"GDC({a}, {b}) = {c1} {c2} {c3}");
+            }
+
+            var random = new Random();
+            for(var i = 0; i < 10; i++)
+            {
+                var a = random.Next(1_000);
+                var b = random.Next(1_000);
+                var c1 = Gcd(a, b);
+                var c2 = ChurchGcd2(a, b);
+                var c3 = ChurchGcd1(a)(b);
+
+                Console.WriteLine($"GDC({a}, {b}) = {c1} {c2} {c3}");
+            }
+
+        }
+
+        static T Gcd<T>(T a, T b) where T: INumber<T>
+        {
+            if (a < b)
+                return Gcd(b - a, a);
+            if (a > b)
+                return Gcd(a - b, b);
+            return a;
+        }
+
+        static T ChurchGcd2<T>(T a, T b) where T : INumber<T> =>
+            ChurchBool.If((a < b).Church())
+                (ToLazy(() => ChurchGcd2(b - a, a)))
+                (ChurchBool.If((a > b).Church())
+                    (ToLazy(() => ChurchGcd2(a - b, b)))
+                    (ToLazy(() => a))
+                )
+            ();
+
+        static Func<T, T> ChurchGcd1<T>(T a) where T : INumber<T> => b =>
+            ChurchBool.If((a < b).Church())
+                (ToLazy(() => ChurchGcd1(b - a)(a)))
+                (ChurchBool.If((a > b).Church())
+                    (ToLazy(() => ChurchGcd1(a - b)(b)))
+                    (ToLazy(() => a))
+                )
+            ();
 
         static void BoolEval()
         {
             var t1 = true.Church();
             var f1 = false.Church();
-            var g1 = True((dynamic)t1)("123");
+            var g1 = True((object)t1)("123");
 
             var t2 = false.Church();
-            var f2 = False((object)false.Church())(false.Church());
+            var f2 = False((object)t2)(true.Church());
             var g2 = False((object)"567")(f2);
 
             Console.WriteLine($"{t1} {f1} {g1} {g1(1)} {g1(1)(0)}");
