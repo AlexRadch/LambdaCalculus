@@ -10,7 +10,6 @@
 
         // Zerro := λf.λz. z // the same as False := λt.λf. f
         // Zerro := (Succ -> Zerro) -> Zerro -> Zerro
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         public static Func<dynamic, dynamic> Zero(Func<dynamic, dynamic> succ) => zero => zero;
         //public static Func<dynamic, dynamic> Zero(Func<dynamic, dynamic> succ) => ChurchBool.False; // should work also!!!
         //public static Func<dynamic, dynamic> Zero(Func<dynamic, dynamic> succ) => ChurchBool.FalseV(succ); // should work also!!!
