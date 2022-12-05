@@ -7,30 +7,41 @@ namespace ChurchApp
         [Params(100, 1_000, 100_00)]
         public int Count { get; set; }
 
-        const int randomMax = 1_000;
+        private Random random = new();
+        int Next() => random.Next(-999, 1_000);
+
+        [IterationSetup]
+        public void IterationSetup()
+        {
+            random = new Random(Count);
+        }
 
         [Benchmark]
-        public void Gcd_Bench()
+        public void Gcd_EuclideanDiv_Bench()
         {
-            var random = new Random(Count);
+            for (var i = 0; i < Count; i++)
+                Math.GcdEuclideanDiv(Next(), Next());
+        }
+
+        [Benchmark]
+        public void Gcd_EuclideanMinus_Bench()
+        {
             for (var i = 0; i < Count; i++) 
-                Program.Gcd(random.Next(1, randomMax), random.Next(1, randomMax));
+                Math.GcdEuclideanMinus(Next(), Next());
         }
 
         [Benchmark]
-        public void ChurchGcd2_Bench()
+        public void ChurchGcd_EuclideanMinus1_Bench()
         {
-            var random = new Random(Count);
             for (var i = 0; i < Count; i++)
-                Program.ChurchGcd2(random.Next(1, randomMax), random.Next(1, randomMax));
+                ChurchMath.GcdEuclideanMinus(Next())(Next());
         }
 
         [Benchmark]
-        public void ChurchGcd1_Bench()
+        public void ChurchGcd_EuclideanMinus2_Bench()
         {
-            var random = new Random(Count);
             for (var i = 0; i < Count; i++)
-                Program.ChurchGcd1(random.Next(1, randomMax))(random.Next(1, randomMax));
+                ChurchMath.GcdEuclideanMinus(Next(), Next());
         }
     }
 }

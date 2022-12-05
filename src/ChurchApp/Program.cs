@@ -1,7 +1,7 @@
-﻿using System.Numerics;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 
 using LambdaCalculus;
+using System.Runtime.ConstrainedExecution;
 using static LambdaCalculus.ChurchBool;
 using static LambdaCalculus.ChurchNum;
 
@@ -11,10 +11,11 @@ namespace ChurchApp
     {
         static void Main()
         {
+            //BoolEval();
+
+            GcdEval();
             var _ = BenchmarkRunner.Run(typeof(GcdBenchmarks));
 
-            //BoolEval();
-            //GcdEval();
             //NumEval();
         }
 
@@ -36,61 +37,33 @@ namespace ChurchApp
             Console.WriteLine($"{ReferenceEquals(t1, f2)} {ReferenceEquals(f1, t2)} {ReferenceEquals(g1, g2)}");
         }
 
-        #region GCD
-
         static void GcdEval()
         {
             {
-                var a = 252;
-                var b = 105;
-                var c1 = Gcd(a, b);
-                var c2 = ChurchGcd2(a, b);
-                var c3 = ChurchGcd1(a)(b);
+                var a = -252;
+                var b = -105;
+                var em = Math.GcdEuclideanMinus(a, b);
+                var ed = Math.GcdEuclideanMinus(a, b);
+                var cem2 = ChurchMath.GcdEuclideanMinus(a, b);
+                var cem1 = ChurchMath.GcdEuclideanMinus(a)(b);
 
-                Console.WriteLine($"GDC({a}, {b}) = {c1} {c2} {c3}");
+                Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem2} {cem1}");
             }
 
             var random = new Random();
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 15; i++)
             {
-                var a = random.Next(1_000);
-                var b = random.Next(1_000);
-                var c1 = Gcd(a, b);
-                var c2 = ChurchGcd2(a, b);
-                var c3 = ChurchGcd1(a)(b);
-                Console.WriteLine($"GDC({a}, {b}) = {c1} {c2} {c3}");
+                var a = random.Next(2_000) - 999;
+                var b = random.Next(2_000) - 999;
+                var em = Math.GcdEuclideanMinus(a, b);
+                var ed = Math.GcdEuclideanMinus(a, b);
+                var cem2 = ChurchMath.GcdEuclideanMinus(a, b);
+                var cem1 = ChurchMath.GcdEuclideanMinus(a)(b);
+
+                Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem2} {cem1}");
             }
 
         }
-
-        internal static T Gcd<T>(T a, T b) where T : INumber<T>
-        {
-            if (a < b)
-                return Gcd(b - a, a);
-            if (a > b)
-                return Gcd(a - b, b);
-            return a;
-        }
-
-        internal static T ChurchGcd2<T>(T a, T b) where T : INumber<T> =>
-            ChurchBool.If((a < b).Church())
-                (ToLazy(() => ChurchGcd2(b - a, a)))
-                (ChurchBool.If((a > b).Church())
-                    (ToLazy(() => ChurchGcd2(a - b, b)))
-                    (ToLazy(() => a))
-                )
-            ();
-
-        internal static Func<T, T> ChurchGcd1<T>(T a) where T : INumber<T> => b =>
-            ChurchBool.If((a < b).Church())
-                (ToLazy(() => ChurchGcd1(b - a)(a)))
-                (ChurchBool.If((a > b).Church())
-                    (ToLazy(() => ChurchGcd1(a - b)(b)))
-                    (ToLazy(() => a))
-                )
-            ();
-
-        #endregion
 
         static void NumEval()
         {
