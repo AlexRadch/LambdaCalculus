@@ -29,8 +29,8 @@
         // If := λp.λt.λe. p t e := λp. p
         // If := Bool -> Bool
         public static Bool If(this Bool predicate) => predicate;
-
         public static dynamic If(this Bool predicate, dynamic @then, dynamic @else) => predicate(@then)(@else);
+        public static dynamic LazyIf(this Bool predicate, Func<dynamic> @then, Func<dynamic> @else) => predicate(@then)(@else)();
 
         #endregion
 
@@ -110,7 +110,7 @@
         //public static bool Unchurch(this Bool p) => p.If()(true)(false); // If should work also
         //public static bool Unchurch(this Bool p) => p.If(true, false); // If should work also
 
-        public static dynamic ToLazy<T>(Func<T> f) => f;
+        //public static dynamic ToLazy<T>(Func<T> f) => f;
 
         #endregion
     }

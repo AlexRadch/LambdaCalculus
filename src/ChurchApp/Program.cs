@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 
 using LambdaCalculus;
-using System.Runtime.ConstrainedExecution;
 using static LambdaCalculus.ChurchBool;
 using static LambdaCalculus.ChurchNum;
 

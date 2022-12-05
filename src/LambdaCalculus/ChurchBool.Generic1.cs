@@ -25,8 +25,8 @@
         // If := λp.λt.λe. p t e := λp. p
         // If := Bool -> Bool
         public static Bool<T> If<T>(this Bool<T> predicate) => predicate;
-
         public static T If<T>(this Bool<T> predicate, T @then, T @else) => predicate(@then)(@else);
+        public static T LazyIf<T>(this Bool<Func<T>> predicate, Func<T> @then, Func<T> @else) => predicate(@then)(@else)();
 
         #endregion
 

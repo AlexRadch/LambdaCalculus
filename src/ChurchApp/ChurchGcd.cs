@@ -18,14 +18,12 @@ namespace ChurchApp
         static T EuclideanMinus<T>(T a, T b) where T : INumber<T>
         {
             return
-            ChurchBool.If(T.IsZero(b).Church(),
-                ToLazy<Func<T>>(() => () => a),
-            ToLazy(() => ChurchBool.If((a > b).Church(),
-                ToLazy(() => EuclideanMinus(b, a - b)),
-            ToLazy(() => EuclideanMinus(a, b - a))
-            )))
-            ()()
-            ;
+            ChurchBool.LazyIf(T.IsZero(b).Church(),
+                () => a,
+            () => ChurchBool.LazyIf((a > b).Church(),
+                () => EuclideanMinus(b, a - b),
+            () => EuclideanMinus(a, b - a)
+            ));
         }
 
         public static Func<T, T> GcdEuclideanMinus<T>(T a) where T : INumber<T> => b =>
@@ -39,14 +37,12 @@ namespace ChurchApp
         static Func<T, T> EuclideanMinus<T>(T a) where T : INumber<T> => b =>
         {
             return
-            ChurchBool.If(T.IsZero(b).Church(),
-                ToLazy<Func<T>>(() => () => a),
-            ToLazy(() => ChurchBool.If((a > b).Church(),
-                ToLazy(() => EuclideanMinus(b)(a - b)),
-            ToLazy(() => EuclideanMinus(a)(b - a))
-            )))
-            ()()
-            ;
+            ChurchBool.LazyIf(T.IsZero(b).Church(),
+                () => a,
+            () => ChurchBool.LazyIf((a > b).Church(),
+                () => EuclideanMinus(b)(a - b),
+            () => EuclideanMinus(a)(b - a)
+            ));
         };
 
     }

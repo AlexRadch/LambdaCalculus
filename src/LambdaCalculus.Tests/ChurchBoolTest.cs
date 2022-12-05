@@ -146,6 +146,8 @@ namespace LambdaCalculus
                 Assert.Equal(result, cv.If()(@then)(@else));
                 Assert.Equal(result, ChurchBool.If(cv, @then, @else));
                 Assert.Equal(result, cv.If((object)@then, (object)@else));
+                Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then, () => @else));
+                Assert.Equal(result, cv.LazyIf(() => @then, () => @else));
 
                 // predicate should work them self also
                 Assert.Equal(result, cv(@then)(@else));
@@ -158,6 +160,8 @@ namespace LambdaCalculus
                 Assert.Equal(result, cv.If()(@then2)(@else2));
                 Assert.Equal(result, ChurchBool.If(cv, @then2, @else2));
                 Assert.Equal(result, cv.If((object)@then2, (object)@else2));
+                Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then2, () => @else2));
+                Assert.Equal(result, cv.LazyIf(() => @then2, () => @else2));
 
                 // predicate should work them self also
                 Assert.Equal(result, cv(@then2)(@else2));
