@@ -12,23 +12,19 @@ namespace LambdaCalculus
         [MemberData(nameof(GetDynamicData2))]
         public void TrueTest(object @true, object @false)
         {
-            Assert.Equal(@true, ChurchBool.True(@true)(@false));
-            Assert.Equal(@true, ChurchBool.TrueV(@true)(@false));
-            //Assert.Equal(@true, ChurchBool.True(@true, @false));
+            Assert.Equal(@true, ChurchBool.True(@true, @false));
+            Assert.Equal(@true, ChurchBool.TrueV(@true, @false));
 
-            Assert.Equal(@true.ToString(), ChurchBool.True(@true)(@false).ToString());
-            Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true)(@false).ToString());
-            //Assert.Equal(@true.ToString(), ChurchBool.True(@true, @false).ToString());
+            Assert.Equal(@true.ToString(), ChurchBool.True(@true, @false).ToString());
+            Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true, @false).ToString());
 
             object exception = new Action(() => throw new NotImplementedException());
 
-            Assert.Equal(@true, ChurchBool.True(@true)(exception));
-            Assert.Equal(@true, ChurchBool.TrueV(@true)(exception));
-            //Assert.Equal(@true, ChurchBool.True(@true, exception));
+            Assert.Equal(@true, ChurchBool.True(@true, exception));
+            Assert.Equal(@true, ChurchBool.TrueV(@true, exception));
 
-            Assert.Equal(@true.ToString(), ChurchBool.True(@true)(exception).ToString());
-            Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true)(exception).ToString());
-            //Assert.Equal(@true.ToString(), ChurchBool.True(@true, exception).ToString());
+            Assert.Equal(@true.ToString(), ChurchBool.True(@true, exception).ToString());
+            Assert.Equal(@true.ToString(), ChurchBool.TrueV(@true, exception).ToString());
         }
 
         //[Theory]
@@ -57,23 +53,19 @@ namespace LambdaCalculus
         [MemberData(nameof(GetDynamicData2))]
         public void FalseTest(object @true, object @false)
         {
-            Assert.Equal(@false, ChurchBool.False(@true)(@false));
-            Assert.Equal(@false, ChurchBool.FalseV(@true)(@false));
-            //Assert.Equal(@false, ChurchBool.False(@true, @false));
+            Assert.Equal(@false, ChurchBool.False(@true, @false));
+            Assert.Equal(@false, ChurchBool.FalseV(@true, @false));
 
-            Assert.Equal(@false.ToString(), ChurchBool.False(@true)(@false).ToString());
-            Assert.Equal(@false.ToString(), ChurchBool.FalseV(@true)(@false).ToString());
-            //Assert.Equal(@false.ToString(), ChurchBool.False(@true, @false).ToString());
+            Assert.Equal(@false.ToString(), ChurchBool.False(@true, @false).ToString());
+            Assert.Equal(@false.ToString(), ChurchBool.FalseV(@true, @false).ToString());
 
             object exception = new Action(() => throw new NotImplementedException());
 
-            Assert.Equal(@false, ChurchBool.False(exception)(@false));
-            Assert.Equal(@false, ChurchBool.FalseV(exception)(@false));
-            //Assert.Equal(@false, ChurchBool.False(exception, @false));
+            Assert.Equal(@false, ChurchBool.False(exception, @false));
+            Assert.Equal(@false, ChurchBool.FalseV(exception, @false));
 
-            Assert.Equal(@false.ToString(), ChurchBool.False(exception)(@false).ToString());
-            Assert.Equal(@false.ToString(), ChurchBool.FalseV(exception)(@false).ToString());
-            //Assert.Equal(@false.ToString(), ChurchBool.False(exception, @false).ToString());
+            Assert.Equal(@false.ToString(), ChurchBool.False(exception, @false).ToString());
+            Assert.Equal(@false.ToString(), ChurchBool.FalseV(exception, @false).ToString());
         }
 
         #endregion
@@ -88,28 +80,28 @@ namespace LambdaCalculus
             {
                 var result = value ? @true : @false;
 
-                Assert.Equal(result, ChurchBool.Church(value)(@true)(@false));
-                Assert.Equal(result, value.Church()(@true)(@false));
+                Assert.Equal(result, ChurchBool.Church(value)(@true, @false));
+                Assert.Equal(result, value.Church()(@true, @false));
 
-                Assert.Equal(result.ToString(), ChurchBool.Church(value)(@true)(@false).ToString());
-                Assert.Equal(result.ToString(), value.Church()(@true)(@false).ToString());
+                Assert.Equal(result.ToString(), ChurchBool.Church(value)(@true, @false).ToString());
+                Assert.Equal(result.ToString(), value.Church()(@true, @false).ToString());
 
 
                 Action exception = () => throw new NotImplementedException();
                 var @true2 = value ? @true : exception;
                 var @false2 = value ? exception : @false;
 
-                Assert.Equal(result, ChurchBool.Church(value)(@true2)(@false2));
-                Assert.Equal(result, value.Church()(@true2)(@false2));
+                Assert.Equal(result, ChurchBool.Church(value)(@true2, @false2));
+                Assert.Equal(result, value.Church()(@true2, @false2));
 
-                Assert.Equal(result.ToString(), ChurchBool.Church(value)(@true2)(@false2).ToString());
-                Assert.Equal(result.ToString(), value.Church()(@true2)(@false2).ToString());
+                Assert.Equal(result.ToString(), ChurchBool.Church(value)(@true2, @false2).ToString());
+                Assert.Equal(result.ToString(), value.Church()(@true2, @false2).ToString());
             }
         }
 
         #endregion
 
-        #region UnchurchTest
+        #region Unchurch Tests
 
         [Theory]
         [MemberData(nameof(GetBoolsData))]
@@ -120,11 +112,11 @@ namespace LambdaCalculus
             Assert.Equal(a, ca.Unchurch());
 
             // predicate should work them self also
-            Assert.Equal(a, ca(true)(false));
+            Assert.Equal(a, ca(true, false));
 
             // If(predicate) should work also
-            Assert.Equal(a, ChurchBool.If(ca)(true)(false));
-            Assert.Equal(a, ca.If()(true)(false));
+            Assert.Equal(a, ChurchBool.If(ca)(true, false));
+            Assert.Equal(a, ca.If()(true, false));
             Assert.Equal(a, ChurchBool.If(ca, true, false));
             Assert.Equal(a, ca.If(true, false));
         }
@@ -142,29 +134,37 @@ namespace LambdaCalculus
                 var result = value ? @then : @else;
                 var cv = value.Church();
 
-                Assert.Equal(result, ChurchBool.If(cv)(@then)(@else));
-                Assert.Equal(result, cv.If()(@then)(@else));
+                Assert.Equal(result, ChurchBool.If(cv)(@then, @else));
+                Assert.Equal(result, cv.If()(@then, @else));
+                Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then, () => @else));
+                Assert.Equal(result, cv.LazyIf(() => @then, () => @else));
+
                 Assert.Equal(result, ChurchBool.If(cv, @then, @else));
                 Assert.Equal(result, cv.If((object)@then, (object)@else));
                 Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then, () => @else));
                 Assert.Equal(result, cv.LazyIf(() => @then, () => @else));
 
                 // predicate should work them self also
-                Assert.Equal(result, cv(@then)(@else));
+                Assert.Equal(result, cv(@then, @else));
+                //Assert.Equal(result, cv(() => @then, () => @else)());
 
                 Action exception = () => throw new NotImplementedException();
                 var @then2 = value ? @then : exception;
                 var @else2 = value ? exception : @else;
 
-                Assert.Equal(result, ChurchBool.If(cv)(@then2)(@else2));
-                Assert.Equal(result, cv.If()(@then2)(@else2));
-                Assert.Equal(result, ChurchBool.If(cv, @then2, @else2));
-                Assert.Equal(result, cv.If((object)@then2, (object)@else2));
-                Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then2, () => @else2));
-                Assert.Equal(result, cv.LazyIf(() => @then2, () => @else2));
+                Assert.Equal(result, ChurchBool.If(cv)(@then, @else));
+                Assert.Equal(result, cv.If()(@then, @else));
+                Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then, () => @else));
+                Assert.Equal(result, cv.LazyIf(() => @then, () => @else));
+
+                Assert.Equal(result, ChurchBool.If(cv, @then, @else));
+                Assert.Equal(result, cv.If((object)@then, (object)@else));
+                Assert.Equal(result, ChurchBool.LazyIf(cv, () => @then, () => @else));
+                Assert.Equal(result, cv.LazyIf(() => @then, () => @else));
 
                 // predicate should work them self also
-                Assert.Equal(result, cv(@then2)(@else2));
+                Assert.Equal(result, cv(@then2, @else2));
+                //Assert.Equal(result, cv(() => @then)(() => @else)());
             }
         }
 
@@ -189,8 +189,6 @@ namespace LambdaCalculus
         {
             var ca = a.Church();
             var cb = b.Church();
-            Assert.Equal(a || b, ChurchBool.Or(ca)(cb).Unchurch());
-            Assert.Equal(a || b, ca.Or()(cb).Unchurch());
             Assert.Equal(a || b, ChurchBool.Or(ca, cb).Unchurch());
             Assert.Equal(a || b, ca.Or(cb).Unchurch());
         }
@@ -201,8 +199,6 @@ namespace LambdaCalculus
         {
             var ca = a.Church();
             var cb = b.Church();
-            Assert.Equal(a && b, ChurchBool.And(ca)(cb).Unchurch());
-            Assert.Equal(a && b, ca.And()(cb).Unchurch());
             Assert.Equal(a && b, ChurchBool.And(ca, cb).Unchurch());
             Assert.Equal(a && b, ca.And(cb).Unchurch());
         }
@@ -213,8 +209,6 @@ namespace LambdaCalculus
         {
             var ca = a.Church();
             var cb = b.Church();
-            Assert.Equal(a ^ b, ChurchBool.Xor(ca)(cb).Unchurch());
-            Assert.Equal(a ^ b, ca.Xor()(cb).Unchurch());
             Assert.Equal(a ^ b, ChurchBool.Xor(ca, cb).Unchurch());
             Assert.Equal(a ^ b, ca.Xor(cb).Unchurch());
         }
@@ -225,8 +219,6 @@ namespace LambdaCalculus
         {
             var ca = a.Church();
             var cb = b.Church();
-            Assert.Equal(!(a || b), ChurchBool.Nor(ca)(cb).Unchurch());
-            Assert.Equal(!(a || b), ca.Nor()(cb).Unchurch());
             Assert.Equal(!(a || b), ChurchBool.Nor(ca, cb).Unchurch());
             Assert.Equal(!(a || b), ca.Nor(cb).Unchurch());
         }
@@ -237,8 +229,6 @@ namespace LambdaCalculus
         {
             var ca = a.Church();
             var cb = b.Church();
-            Assert.Equal(!(a && b), ChurchBool.Nand(ca)(cb).Unchurch());
-            Assert.Equal(!(a && b), ca.Nand()(cb).Unchurch());
             Assert.Equal(!(a && b), ChurchBool.Nand(ca, cb).Unchurch());
             Assert.Equal(!(a && b), ca.Nand(cb).Unchurch());
         }
@@ -249,15 +239,13 @@ namespace LambdaCalculus
         {
             var ca = a.Church();
             var cb = b.Church();
-            Assert.Equal(a == b, ChurchBool.Eq(ca)(cb).Unchurch());
-            Assert.Equal(a == b, ca.Eq()(cb).Unchurch());
             Assert.Equal(a == b, ChurchBool.Eq(ca, cb).Unchurch());
             Assert.Equal(a == b, ca.Eq(cb).Unchurch());
         }
 
         #endregion
 
-        #region Formula Test
+        #region Formula Tests
 
         [Theory]
         [InlineData(438, 5)]

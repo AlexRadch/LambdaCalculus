@@ -22,11 +22,11 @@ namespace ChurchApp
         {
             var t1 = true.Church();
             var f1 = false.Church();
-            var g1 = True((object)t1)("123");
+            var g1 = True(t1, "123");
 
             var t2 = false.Church();
-            var f2 = False((object)t2)(true.Church());
-            var g2 = False((object)"567")(f2);
+            var f2 = False(t2, true.Church());
+            var g2 = False("567", f2);
 
             Console.WriteLine($"{t1} {f1} {g1} {g1(1)} {g1(1)(0)}");
             Console.WriteLine($"{t2} {f2} {g2} {g2(1)} {g2(1)(0)}");
@@ -43,10 +43,9 @@ namespace ChurchApp
                 var b = -105;
                 var em = Math.GcdEuclideanMinus(a, b);
                 var ed = Math.GcdEuclideanMinus(a, b);
-                var cem2 = ChurchMath.GcdEuclideanMinus(a, b);
-                var cem1 = ChurchMath.GcdEuclideanMinus(a)(b);
+                var cem = ChurchMath.GcdEuclideanMinus(a, b);
 
-                Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem2} {cem1}");
+                Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem}");
             }
 
             var random = new Random();
@@ -56,10 +55,9 @@ namespace ChurchApp
                 var b = random.Next(2_000) - 999;
                 var em = Math.GcdEuclideanMinus(a, b);
                 var ed = Math.GcdEuclideanMinus(a, b);
-                var cem2 = ChurchMath.GcdEuclideanMinus(a, b);
-                var cem1 = ChurchMath.GcdEuclideanMinus(a)(b);
+                var cem = ChurchMath.GcdEuclideanMinus(a, b);
 
-                Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem2} {cem1}");
+                Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem}");
             }
 
         }

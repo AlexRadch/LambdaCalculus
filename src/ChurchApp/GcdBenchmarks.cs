@@ -31,14 +31,7 @@ namespace ChurchApp
         }
 
         [Benchmark]
-        public void ChurchGcd_EuclideanMinus1_Bench()
-        {
-            for (var i = 0; i < Count; i++)
-                ChurchMath.GcdEuclideanMinus(Next())(Next());
-        }
-
-        [Benchmark]
-        public void ChurchGcd_EuclideanMinus2_Bench()
+        public void ChurchGcd_EuclideanMinus_Bench()
         {
             for (var i = 0; i < Count; i++)
                 ChurchMath.GcdEuclideanMinus(Next(), Next());
