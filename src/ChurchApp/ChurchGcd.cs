@@ -1,29 +1,25 @@
-﻿using System.Numerics;
+﻿namespace ChurchApp;
 
-using LambdaCalculus;
-using static LambdaCalculus.ChurchBool;
+using static LambdaCalculus.Church;
 
-namespace ChurchApp
+public static class ChurchMath
 {
-    public static class ChurchMath
+    public static uint GcdEuclideanMinus(uint a, uint b)
     {
-        public static T GcdEuclideanMinus<T>(T a, T b) where T : INumber<T>
-        {
-            a = T.Abs(a);
-            b = T.Abs(b);
-            var r = EuclideanMinus(T.Max(a, b), T.Min(a, b));
-            return r;
-        }
+        return EuclideanMinus(a.AsChurch(), b.AsChurch()).UnChurch();
+    }
 
-        static T EuclideanMinus<T>(T a, T b) where T : INumber<T>
-        {
-            return
-            ChurchBool.LazyIf(T.IsZero(b).Church(),
-                () => a,
-            () => ChurchBool.LazyIf((a > b).Church(),
-                () => EuclideanMinus(b, a - b),
-            () => EuclideanMinus(a, b - a)
-            ));
-        }
+    static Numeral EuclideanMinus(Numeral a, Numeral b)
+    {
+        return
+        IsZero(b)
+            (AsLazy(() => a))
+            (AsLazy(() => 
+        GEQ(a)(b)
+            (AsLazy(() => EuclideanMinus(b, Minus(a)(b))))
+            (AsLazy(() => EuclideanMinus(Minus(b)(a), a)))
+            ()
+        ))
+        ();
     }
 }

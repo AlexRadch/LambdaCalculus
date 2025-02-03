@@ -4,11 +4,11 @@ namespace ChurchApp
 {
     public class GcdBenchmarks
     {
-        [Params(100, 1_000, 100_00)]
+        [Params(1, 10)]
         public int Count { get; set; }
 
-        private Random random = new();
-        int Next() => random.Next(-999, 1_000);
+        private Random random = new(391);
+        private uint Next() => (uint)random.Next(0, 100);
 
         [IterationSetup]
         public void IterationSetup()
@@ -23,7 +23,7 @@ namespace ChurchApp
                 Math.GcdEuclideanDiv(Next(), Next());
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void Gcd_EuclideanMinus_Bench()
         {
             for (var i = 0; i < Count; i++) 

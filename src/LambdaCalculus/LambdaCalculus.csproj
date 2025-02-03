@@ -1,17 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>13.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ChurchBool.Generic1.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="ChurchBool.Generic1.cs" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.*" />
   </ItemGroup>
 
 </Project>
