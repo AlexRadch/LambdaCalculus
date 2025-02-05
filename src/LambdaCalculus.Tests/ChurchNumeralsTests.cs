@@ -10,37 +10,46 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetNextIntsData))]
     public void ZeroTest(Func<int, int> succ, int zero)
     {
-        Assert.Equal(zero, ZeroL(x => succ(x))(zero));
-        Assert.Equal(zero, Zero(x => succ(x))(zero));
+        NextNumeral next = x => succ(x);
+        Assert.Equal(zero, ZeroF(next)(zero));
+        Assert.Equal(zero, Zero(next)(zero));
+        Assert.Equal(zero, LazyZero()(next)(zero));
 
-        Assert.Equal(zero, ZeroL_False(x => succ(x))(zero));
-        Assert.Equal(zero, Zero_False(x => succ(x))(zero));
+        Assert.Equal(zero, ZeroF_False(next)(zero));
+        Assert.Equal(zero, Zero_False(next)(zero));
 
-        var one = succ(zero);
-        Assert.Equal(one, ZeroL(x => succ(x))(one));
-        Assert.Equal(one, Zero(x => succ(x))(one));
+        next = x => throw new NotImplementedException();
+        Assert.Equal(zero, ZeroF(next)(zero));
+        Assert.Equal(zero, Zero(next)(zero));
+        Assert.Equal(zero, LazyZero()(next)(zero));
 
-        Assert.Equal(one, ZeroL_False(x => succ(x))(one));
-        Assert.Equal(one, Zero_False(x => succ(x))(one));
+        Assert.Equal(zero, ZeroF_False(next)(zero));
+        Assert.Equal(zero, Zero_False(next)(zero));
     }
 
     [Theory]
     [MemberData(nameof(GetNextIntsData))]
     public void OneTest(Func<int, int> succ, int zero)
     {
+        NextNumeral next = x => succ(x);
         var one = succ(zero);
-        Assert.Equal(one, OneL(x => succ(x))(zero));
-        Assert.Equal(one, One(x => succ(x))(zero));
+        Assert.Equal(one, OneF(next)(zero));
+        Assert.Equal(one, One(next)(zero));
+        Assert.Equal(one, LazyOne()(next)(zero));
 
-        Assert.Equal(one, OneL(OneL(x => succ(x)))(zero));
-        Assert.Equal(one, One(One(x => succ(x)))(zero));
+        Assert.Equal(one, OneF(OneF(next))(zero));
+        Assert.Equal(one, One(One(next))(zero));
+        Assert.Equal(one, LazyOne()(LazyOne()(next))(zero));
 
         var two = succ(one);
-        Assert.Equal(two, OneL(x => succ(succ(x)))(zero));
-        Assert.Equal(two, One(x => succ(succ(x)))(zero));
+        Assert.Equal(two, OneF(next)(one));
+        Assert.Equal(two, One(next)(one));
+        Assert.Equal(two, LazyOne()(LazyOne()(next))(one));
 
-        Assert.Equal(two, OneL(x => succ(x))(one));
-        Assert.Equal(two, One(x => succ(x))(one));
+        next = x => succ(succ(x));
+        Assert.Equal(two, OneF(next)(zero));
+        Assert.Equal(two, One(next)(zero));
+        Assert.Equal(two, LazyOne()(next)(zero));
     }
 
     #endregion
@@ -243,6 +252,68 @@ public class ChurchNumeralsTests
         var cm = m.AsChurch();
         var cn = n.AsChurch();
         Assert.Equal(Math.Max(m, n), Max(cm)(cn).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetUIntsData2))]
+    public void DivideTest(uint m, uint n)
+    {
+        if (n == 0)
+            return;
+
+        var cm = m.AsChurch();
+        var cn = n.AsChurch();
+        Assert.Equal(m / n, DivideR_mn(cm)(cn).UnChurch());
+
+        Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1R(cm)(cn).UnChurch());
+        Assert.Equal(m / n, DivideR(cm)(cn).UnChurch());
+
+        {
+            Func<Numeral, Func<Numeral, Numeral>> div1 = null!;
+            div1 = Div1(div1);
+            if (Minus(cm)(cn).UnChurch() == 0)
+                Assert.Equal((m > 0 ? (m - 1) : 0) / n, div1(cm)(cn).UnChurch());
+            else
+                Assert.Throws<NullReferenceException>(() => div1(cm)(cn));
+        }
+
+        Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1_Z1(cm)(cn).UnChurch());
+        Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1_Z2(cm)(cn).UnChurch());
+        Assert.Equal(m / n, Divide(cm)(cn).UnChurch());
+        Assert.Equal(m / n, Divide_Z2(cm)(cn).UnChurch());
+    }
+
+    #endregion
+
+    #region Functions
+
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void FactorialTest(uint x)
+    {
+        if (x > 5)
+            return;
+
+        var cx = x.AsChurch();
+        var expected = 1u;
+        for (uint i = 1; i <= x; i++)
+            expected *= i;
+
+        Assert.Equal(expected, FactorialR_n(cx).UnChurch());
+
+        {
+            Func<Numeral, Numeral> fact = null!;
+            fact = Fact(fact);
+            fact = Fact(fact);
+            fact = Fact(fact);
+            fact = Fact(fact);
+            if (x < 4)
+                Assert.Equal(expected, fact(cx).UnChurch());
+            else
+                Assert.Throws<NullReferenceException>(() => fact(cx));
+        }
+
+        Assert.Equal(expected, Factorial(cx).UnChurch());
     }
 
     #endregion

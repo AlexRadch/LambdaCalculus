@@ -1,5 +1,4 @@
-﻿
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using LambdaCalculus;
 
 namespace ChurchApp;

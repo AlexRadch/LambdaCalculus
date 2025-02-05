@@ -12,14 +12,12 @@ public static class ChurchMath
     static Numeral EuclideanMinus(Numeral a, Numeral b)
     {
         return
-        IsZero(b)
-            (AsLazy(() => a))
-            (AsLazy(() => 
-        GEQ(a)(b)
-            (AsLazy(() => EuclideanMinus(b, Minus(a)(b))))
-            (AsLazy(() => EuclideanMinus(Minus(b)(a), a)))
-            ()
-        ))
-        ();
+        LazyIf(IsZero(b))
+            (() => a)
+            (() =>
+        LazyIf(GEQ(a)(b))
+            (() => EuclideanMinus(b, Minus(a)(b)))
+            (() => EuclideanMinus(Minus(b)(a), a))
+        );
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using static LambdaCalculus.Church;
 
 namespace LambdaCalculus;
 
 // Next := λn. next n
-//using Next = Func<dynamic, dynamic>;
+//using NextNumeral = Func<dynamic, dynamic>;
 
 public static partial class Church
 {
     #region Delegates
 
     // NextNumeral := λn. next n
-    public delegate dynamic NextNumeral(dynamic num);
+    public delegate dynamic NextNumeral(dynamic Numeral);
 
     // Numeral := λf.λz. n times f from z // 0 f z := z, 1 f z := f z, 2 f z := f (f z), n f z := f (f .. (f z)..)
     [DebuggerDisplay("{LambdaCalculus.Church.UnChurch(this)}")]
@@ -23,21 +24,24 @@ public static partial class Church
 
     // Zero := λf.λz. z := False
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static NextNumeral ZeroL(NextNumeral f) => z => z;
-    public static readonly Numeral Zero = ZeroL;
+    public static NextNumeral ZeroF(NextNumeral f) => z => z;
+    public static readonly Numeral Zero = ZeroF;
+    public static readonly Func<Numeral> LazyZero = () => ZeroF;
 
     // Zero := False
     [EditorBrowsable(EditorBrowsableState.Never)]
-    //public static Next ZeroL_False(Next f) => FalseL<Next, dynamic>(f);
-    public static NextNumeral ZeroL_False(NextNumeral f) => z => FalseL<NextNumeral, dynamic>(f)(z);
+    //public static NextNumeral ZeroF_False(NextNumeral f) => FalseF<NextNumeral, dynamic>(f);
+    public static NextNumeral ZeroF_False(NextNumeral f) => z => FalseF<NextNumeral, dynamic>(f)(z);
     [EditorBrowsable(EditorBrowsableState.Never)]
-    //public static readonly Num Zero_False = (Num)False;
-    public static readonly Numeral Zero_False = ZeroL_False;
+    //public static readonly Numeral Zero_False = False;
+    public static readonly Numeral Zero_False = f => z => False(f)(z);
+    //public static readonly Numeral Zero_False = ZeroF_False;
 
     // One := λf.λz. f z := λf f := Id
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static NextNumeral OneL(NextNumeral f) => f;
-    public static readonly Numeral One = OneL;
+    public static NextNumeral OneF(NextNumeral f) => f;
+    public static readonly Numeral One = OneF;
+    public static readonly Func<Numeral> LazyOne = () => OneF;
 
     #endregion
 
@@ -72,7 +76,7 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Numeral> Exp_Mult(Numeral m) => n => n(x => Mult(x)(m))(One);
 
-    // Pred := λn.λf.λz. n (λg.λh. h (g f)) (λu. z) (λu. u)
+    // Pred := λn.λf.λz. n (λg.λh. h (g f)) (λ_. z) (λu. u)
     //public static Num Pred(Num n) => f => z => n(g => h => h(g(f)))(_ => z)(9641u => u);
     public static Numeral Pred(Numeral n) => f => z => n(g => (NextNumeral)(h => h(g(f))))((NextNumeral)(_ => z))((NextNumeral)(u => u));
 
@@ -88,6 +92,72 @@ public static partial class Church
 
     // Max := λm.λn. GE m n m n
     public static Func<Numeral, Numeral> Max(Numeral m) => n => GEQ(m)(n)(m)(n);
+
+    #region Divide
+
+    // DivideR_mn ⁡:= λm.λn. if⁡ m >= n then⁡ 1 + (m − n) / n else⁡ 0
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> DivideR_mn(Numeral m) => n =>
+        LazyIf(GEQ(m)(n))
+            (() => Succ(DivideR_mn(Minus(m)(n))(n)))
+            (LazyZero);
+
+    // Divide1R ⁡:= λm.λn. if⁡ n <= m then⁡ 0 else⁡ 1 + (m − n) / n 
+    // Divide1R ⁡:= λm.λn. if⁡ IsZero(m - n) then⁡ 0 else⁡ 1 + (m − n) / n 
+    // Divide1R ⁡:= λm.λn. (λd. if⁡ (IsZero d) then⁡ 0 else⁡ 1 + d / n) (m - n)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> Divide1R(Numeral m) => n => new Func<Numeral, Numeral>(d => 
+        LazyIf(IsZero(d))
+            (LazyZero)
+            (() => Succ(Divide1R(d)(n)))
+        )
+        (Minus(m)(n));
+
+    // DivideR ⁡:= λm. Divide1R (m + 1)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> DivideR(Numeral m) => Divide1R(Succ(m));
+
+    // Div1 :⁡= λc.λm.λn (λd.IsZero⁡ d 0 (1 + (c d n))) (Minus⁡ m n)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Func<Numeral, Numeral>> Div1(Func<Numeral, Func<Numeral, Numeral>> c) => m => n =>
+        new Func<Numeral, Numeral>(d =>
+        LazyIf(IsZero(d))
+            (LazyZero)
+            (() => Succ(c(d)(n)))
+        )
+        (Minus(m)(n));
+
+    // Divide1_Z1 ⁡:= Z1 Div1
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Func<Numeral, Numeral>> Divide1_Z1 = Combinators.Z1<Numeral, Func<Numeral, Numeral>>(Div1);
+
+    // Divide1_Z2 ⁡:= Z2 Div1
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> Divide1_Z2(Numeral m) => Combinators.Z2<Numeral, Func<Numeral, Numeral>>(Div1)(m);
+
+    // Divide ⁡:= λm. Divide1_Z1 (m + 1)
+    public static Func<Numeral, Numeral> Divide(Numeral m) => Divide1_Z1(Succ(m));
+
+    // Divide_Z2 ⁡:= λm. Divide1_Z2 (m + 1)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> Divide_Z2(Numeral m) => Divide1_Z2(Succ(m));
+
+    #endregion
+
+    #endregion
+
+    #region Functions
+
+    // FactorialR_n := λx. If (x == 0) (1) (x * (FactorialR_n (x - 1)))
+    public static Numeral FactorialR_n(Numeral x) => LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(FactorialR_n(Pred(x))));
+
+    // Fact := λf. λx. If (x == 0) (1) (x * (f (x - 1)))
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> Fact(Func<Numeral, Numeral> f) => x => 
+        LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(f(Pred(x))));
+
+    // Factorial ⁡:= Z1 Fact
+    public static readonly Func<Numeral, Numeral> Factorial = Combinators.Z1<Numeral, Numeral>(Fact);
 
     #endregion
 
@@ -139,6 +209,8 @@ public static partial class Church
     }
 
     public static uint UnChurch(this Numeral n) => n(x => x + 1)(0u);
+
+    public static uint UnChurch(this Func<Numeral> n) => n()(x => x + 1)(0u);
 
     #endregion
 }

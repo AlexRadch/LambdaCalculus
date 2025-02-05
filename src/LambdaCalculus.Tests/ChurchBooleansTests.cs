@@ -1,6 +1,7 @@
-using static LambdaCalculus.Church;
-
 namespace LambdaCalculus.Tests;
+
+using static LambdaCalculus.Church;
+using static LambdaCalculus.Extensions;
 
 public class ChurchBooleansTests
 {
@@ -10,18 +11,20 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetDynamicsData2))]
     public void TrueTest(object @true, object @false)
     {
-        Assert.Equal(@true, TrueL<object, object>(@true)(@false));
-        Assert.Equal(@true, TrueL<dynamic, dynamic>(@true)(@false));
+        Assert.Equal(@true, TrueF<object, object>(@true)(@false));
+        Assert.Equal(@true, TrueF<dynamic, dynamic>(@true)(@false));
         Assert.Equal(@true, True(@true)(@false));
+        Assert.Equal(@true, LazyTrue()(@true)(@false));
     }
 
     [Theory]
     [MemberData(nameof(GetDynamicsData2))]
     public void FalseTest(object @true, object @false)
     {
-        Assert.Equal(@false, FalseL<object, object>(@true)(@false));
-        Assert.Equal(@false, FalseL<dynamic, dynamic>(@true)(@false));
+        Assert.Equal(@false, FalseF<object, object>(@true)(@false));
+        Assert.Equal(@false, FalseF<dynamic, dynamic>(@true)(@false));
         Assert.Equal(@false, False(@true)(@false));
+        Assert.Equal(@false, LazyFalse()(@true)(@false));
     }
 
     #endregion
@@ -46,6 +49,12 @@ public class ChurchBooleansTests
     {
         var ca = a.AsChurch();
         Assert.Equal(a, ca.UnChurch());
+
+        var la = () => ca;
+        Assert.Equal(a, la.UnChurch());
+
+        la = AsLazy(() => ca);
+        Assert.Equal(a, la.UnChurch());
     }
 
     #endregion
@@ -62,17 +71,32 @@ public class ChurchBooleansTests
 
         Assert.Equal(!a, Not_ab(ca).UnChurch());
         Assert.Equal(a, Not_ab(Not_ab(ca)).UnChurch());
+
+        Boolean la() => ca;
+        Assert.Equal(!a, Not(la)().UnChurch());
+        Assert.Equal(a, Not(Not(la))().UnChurch());
     }
 
     [Theory]
     [MemberData(nameof(GetBoolsData2))]
     public void OrTest(bool a, bool b)
     {
-        var expected = a || b;
         var ca = a.AsChurch();
         var cb = b.AsChurch();
-
+        var expected = a || b;
         Assert.Equal(expected, Or(ca)(cb).UnChurch());
+
+        //Boolean la() => ca;
+        var lb = () => cb;
+        Assert.Equal(expected, LazyOr(ca)(lb).UnChurch());
+        //Assert.Equal(expected, Or(la)(lb).UnChurch());
+
+        lb = () => throw new NotImplementedException();
+        if (a)
+        {
+            Assert.Equal(expected, LazyOr(ca)(lb).UnChurch());
+            //Assert.Equal(expected, Or(la)(lb).UnChurch());
+        }
     }
 
     [Theory]
@@ -81,7 +105,20 @@ public class ChurchBooleansTests
     {
         var ca = a.AsChurch();
         var cb = b.AsChurch();
-        Assert.Equal(a && b, And(ca)(cb).UnChurch());
+        var expected = a && b;
+        Assert.Equal(expected, And(ca)(cb).UnChurch());
+
+        //Boolean la() => ca;
+        var lb = () => cb;
+        Assert.Equal(expected, LazyAnd(ca)(lb).UnChurch());
+        //Assert.Equal(expected, And(la)(lb).UnChurch());
+
+        lb = () => throw new NotImplementedException();
+        if (!a)
+        {
+            Assert.Equal(expected, LazyAnd(ca)(lb).UnChurch());
+            //Assert.Equal(expected, And(la)(lb).UnChurch());
+        }
     }
 
     [Theory]
@@ -99,8 +136,21 @@ public class ChurchBooleansTests
     {
         var ca = a.AsChurch();
         var cb = b.AsChurch();
-        Assert.Equal(!(a || b), Nor(ca)(cb).UnChurch());
-        Assert.Equal(!(a || b), Nor_not(ca)(cb).UnChurch());
+        var expected = !(a || b);
+        Assert.Equal(expected, Nor(ca)(cb).UnChurch());
+        Assert.Equal(expected, Nor_not(ca)(cb).UnChurch());
+
+        //Boolean la() => ca;
+        var lb = () => cb;
+        Assert.Equal(expected, LazyNor(ca)(lb).UnChurch());
+        //Assert.Equal(expected, Nor(la)(lb).UnChurch());
+
+        lb = () => throw new NotImplementedException();
+        if (a)
+        {
+            Assert.Equal(expected, LazyNor(ca)(lb).UnChurch());
+            //Assert.Equal(expected, Nor(la)(lb).UnChurch());
+        }
     }
 
     [Theory]
@@ -137,6 +187,9 @@ public class ChurchBooleansTests
 
                 Assert.Equal(expected, If(@bool)(@then)(@else));
                 Assert.Equal(expected, @bool(@then)(@else)); // predicate should work them self also
+
+                Assert.Equal(expected, LazyIf(@bool)(() => @then)(() => @else));
+                //Assert.Equal(expected, If(() => @bool)(() => @then)(() => @else));
             }
     }
 
@@ -153,7 +206,7 @@ public class ChurchBooleansTests
         var random = new Random(seed);
 
         var bItems = new List<bool>(len);
-        var cItems = new List<Church.Boolean>(len);
+        var cItems = new List<Boolean>(len);
 
         while (bItems.Count < len)
         {
@@ -201,7 +254,7 @@ public class ChurchBooleansTests
         _ => throw new NotImplementedException(),
     };
 
-    private static Church.Boolean EvaluateOp(List<Church.Boolean> items, BoolOp op, int opIndex) => op switch
+    private static Boolean EvaluateOp(List<Boolean> items, BoolOp op, int opIndex) => op switch
     {
         BoolOp.Not => Not(items[opIndex]),
         BoolOp.Or => Or(items[opIndex])(items[opIndex + 1]),
@@ -259,6 +312,9 @@ public class ChurchBooleansTests
         yield return new NotImplementedException();
         yield return (Action)(static () => throw new NotImplementedException());
     }
+
+    public static IEnumerable<object[]> GetDynamicsData1() =>
+        GetDynamics().Select(a => new object[] { a });
 
     public static IEnumerable<object[]> GetDynamicsData2() =>
         from a in GetDynamics()
