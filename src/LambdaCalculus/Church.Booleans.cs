@@ -87,7 +87,10 @@ public static partial class Church
 
     #endregion
 
-    #region Conversations
+    #region Extensions
+
+    // AsLazy := Id
+    public static Func<T> AsLazy<T>(Func<T> value) => value;
 
     // System bool to Boolean
     // AsChurch := b => b ? True : False

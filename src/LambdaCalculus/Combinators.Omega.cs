@@ -9,6 +9,6 @@ public static partial class Combinators
     public static TResult ItSelf<TResult>(SelfApplicable<TResult> f) => f(f);
 
 
-    // Omega := ItSelf(ItSelf);
+    // Omega := λ. ItSelf(ItSelf);
     public static TResult Omega<TResult>() => ItSelf<TResult>(ItSelf);
 }

@@ -269,8 +269,7 @@ public class ChurchNumeralsTests
         Assert.Equal(m / n, DivideR(cm)(cn).UnChurch());
 
         {
-            Func<Numeral, Func<Numeral, Numeral>> div1 = null!;
-            div1 = Div1(div1);
+            Func<Numeral, Func<Numeral, Numeral>> div1 = Div1(null!);
             if (Minus(cm)(cn).UnChurch() == 0)
                 Assert.Equal((m > 0 ? (m - 1) : 0) / n, div1(cm)(cn).UnChurch());
             else

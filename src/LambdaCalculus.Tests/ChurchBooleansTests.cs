@@ -1,7 +1,6 @@
 namespace LambdaCalculus.Tests;
 
 using static LambdaCalculus.Church;
-using static LambdaCalculus.Extensions;
 
 public class ChurchBooleansTests
 {
@@ -29,7 +28,16 @@ public class ChurchBooleansTests
 
     #endregion
 
-    #region Conversations
+    #region Extensions
+
+    [Theory]
+    [MemberData(nameof(GetDynamicsData1))]
+    public void AsLazyTest(object value)
+    {
+        var func = AsLazy(() => value);
+        Assert.Same(func, AsLazy(func));
+        Assert.Same(value, func());
+    }
 
     [Theory]
     [MemberData(nameof(GetBoolsData))]

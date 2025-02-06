@@ -1,28 +1,34 @@
+using static LambdaCalculus.Church;
+
 namespace LambdaCalculus.Tests;
 
-using static LambdaCalculus.Church;
 using static LambdaCalculus.Combinators;
 
-public class CombinatorsOmegaTests
+public class CombinatorsYZTests
 {
-    // SumSA :⁡= λf.λx IsZero⁡ x x (x + (f f (x - 1)))
-    Func<Numeral, Numeral> SumSA(SelfApplicable<Func<Numeral, Numeral>> f) => x =>
+    // SumSA :⁡= λf.λx IsZero⁡ x x (x + (f (x - 1)))
+    Func<Numeral, Numeral> SumSA(Func<Numeral, Numeral> f) => x =>
         LazyIf(IsZero(x))
             (() => x)
-            (() => Plus(x)(f(f)(Pred(x))))
+            (() => Plus(x)(f(Pred(x))))
         ;
 
     [Theory]
     [MemberData(nameof(GetUIntsData1))]
     public void ItSelfTest(uint x)
     {
-        var Sum1 = SumSA(SumSA);
-        var Sum2 = ItSelf((SelfApplicable<Func<Numeral, Numeral>>)SumSA);
-
         var cx = x.AsChurch();
         var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
-        Assert.Equal(expected, Sum1(cx).UnChurch());
-        Assert.Equal(expected, Sum2(cx).UnChurch());
+
+        Func<Numeral, Numeral> Sum2 = SumSA(SumSA(SumSA(null!)));
+
+        if (x < 3)
+            Assert.Equal(expected, Sum2(cx).UnChurch());
+        else
+            Assert.Throws<NullReferenceException>(() => Sum2(cx).UnChurch());
+
+        var Sum = Z<Numeral, Numeral>(SumSA);
+        Assert.Equal(expected, Sum(cx).UnChurch());
     }
 
     #region GetData

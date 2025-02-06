@@ -34,7 +34,8 @@ public static partial class Church
     public static NextNumeral ZeroF_False(NextNumeral f) => z => FalseF<NextNumeral, dynamic>(f)(z);
     [EditorBrowsable(EditorBrowsableState.Never)]
     //public static readonly Numeral Zero_False = False;
-    public static readonly Numeral Zero_False = f => z => False(f)(z);
+    //public static readonly Numeral Zero_False = f => z => False(f)(z);
+    public static readonly Numeral Zero_False = f => z => FalseF<dynamic, dynamic>(f)(z);
     //public static readonly Numeral Zero_False = ZeroF_False;
 
     // One := λf.λz. f z := λf f := Id
