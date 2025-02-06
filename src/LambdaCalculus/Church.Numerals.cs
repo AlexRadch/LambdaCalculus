@@ -127,20 +127,12 @@ public static partial class Church
         )
         (Minus(m)(n));
 
-    // Divide1_Z1 ⁡:= Z1 Div1
+    // Divide1 ⁡:= Z Div1
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Func<Numeral, Numeral>> Divide1_Z1 = Combinators.Z1<Numeral, Func<Numeral, Numeral>>(Div1);
+    public static Func<Numeral, Func<Numeral, Numeral>> Divide1 = Combinators.Z<Numeral, Func<Numeral, Numeral>>(Div1);
 
-    // Divide1_Z2 ⁡:= Z2 Div1
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Numeral> Divide1_Z2(Numeral m) => Combinators.Z2<Numeral, Func<Numeral, Numeral>>(Div1)(m);
-
-    // Divide ⁡:= λm. Divide1_Z1 (m + 1)
-    public static Func<Numeral, Numeral> Divide(Numeral m) => Divide1_Z1(Succ(m));
-
-    // Divide_Z2 ⁡:= λm. Divide1_Z2 (m + 1)
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Numeral> Divide_Z2(Numeral m) => Divide1_Z2(Succ(m));
+    // Divide ⁡:= λm. Divide1 (m + 1)
+    public static Func<Numeral, Numeral> Divide(Numeral m) => Divide1(Succ(m));
 
     #endregion
 
@@ -148,8 +140,8 @@ public static partial class Church
 
     #region Functions
 
-    // FactorialR_n := λx. If (x == 0) (1) (x * (FactorialR_n (x - 1)))
-    public static Numeral FactorialR_n(Numeral x) => LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(FactorialR_n(Pred(x))));
+    // FactorialR_x := λx. If (x == 0) (1) (x * (FactorialR_x (x - 1)))
+    public static Numeral FactorialR_x(Numeral x) => LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(FactorialR_x(Pred(x))));
 
     // Fact := λf. λx. If (x == 0) (1) (x * (f (x - 1)))
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -157,7 +149,7 @@ public static partial class Church
         LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(f(Pred(x))));
 
     // Factorial ⁡:= Z1 Fact
-    public static readonly Func<Numeral, Numeral> Factorial = Combinators.Z1<Numeral, Numeral>(Fact);
+    public static readonly Func<Numeral, Numeral> Factorial = Combinators.Z<Numeral, Numeral>(Fact);
 
     #endregion
 

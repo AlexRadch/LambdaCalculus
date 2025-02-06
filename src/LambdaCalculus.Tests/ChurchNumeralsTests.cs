@@ -277,10 +277,8 @@ public class ChurchNumeralsTests
                 Assert.Throws<NullReferenceException>(() => div1(cm)(cn));
         }
 
-        Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1_Z1(cm)(cn).UnChurch());
-        Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1_Z2(cm)(cn).UnChurch());
+        Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1(cm)(cn).UnChurch());
         Assert.Equal(m / n, Divide(cm)(cn).UnChurch());
-        Assert.Equal(m / n, Divide_Z2(cm)(cn).UnChurch());
     }
 
     #endregion
@@ -299,7 +297,7 @@ public class ChurchNumeralsTests
         for (uint i = 1; i <= x; i++)
             expected *= i;
 
-        Assert.Equal(expected, FactorialR_n(cx).UnChurch());
+        Assert.Equal(expected, FactorialR_x(cx).UnChurch());
 
         {
             Func<Numeral, Numeral> fact = null!;
@@ -428,5 +426,4 @@ public class ChurchNumeralsTests
         select new object[] { next, v };
 
     #endregion
-
 }
