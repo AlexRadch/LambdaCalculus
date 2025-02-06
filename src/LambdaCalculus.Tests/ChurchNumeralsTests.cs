@@ -296,21 +296,28 @@ public class ChurchNumeralsTests
         for (uint i = 1; i <= x; i++)
             expected *= i;
 
-        Assert.Equal(expected, FactorialR_x(cx).UnChurch());
+        Assert.Equal(expected, FactorialR(cx).UnChurch());
 
-        {
-            Func<Numeral, Numeral> fact = null!;
-            fact = Fact(fact);
-            fact = Fact(fact);
-            fact = Fact(fact);
-            fact = Fact(fact);
-            if (x < 4)
-                Assert.Equal(expected, fact(cx).UnChurch());
-            else
-                Assert.Throws<NullReferenceException>(() => fact(cx));
-        }
+        Func<Numeral, Numeral> fact3 = Fact(Fact(Fact(Fact(null!))));
+        if (x < 4)
+            Assert.Equal(expected, fact3(cx).UnChurch());
+        else
+            Assert.Throws<NullReferenceException>(() => fact3(cx));
 
         Assert.Equal(expected, Factorial(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void FibonacciTest(uint x)
+    {
+        var cx = x.AsChurch();
+        var expected = fib(x);
+
+        Assert.Equal(expected, FibonacciR(cx).UnChurch());
+        Assert.Equal(expected, Fibonacci(cx).UnChurch());
+
+        static uint fib(uint x) => (x <= 1) ? x : fib(x - 1) + fib(x - 2);
     }
 
     #endregion
