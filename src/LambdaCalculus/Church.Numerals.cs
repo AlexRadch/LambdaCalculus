@@ -192,15 +192,15 @@ public static partial class Church
 
     #endregion
 
-    #region Conversations
+    #region Extensions
 
     // System uint to Church Num
-    // AsChurch := v => b ? True : False
-    public static Numeral AsChurch(this uint n)
+    // ToChurch := v => b ? True : False
+    public static Numeral ToChurch(this uint n)
     {
         if (n > 3)
         {
-            var result = AsChurch(n / 2);
+            var result = ToChurch(n / 2);
             result = Plus(result)(result);
             if (n % 2 == 1)
                 result = Succ(result);

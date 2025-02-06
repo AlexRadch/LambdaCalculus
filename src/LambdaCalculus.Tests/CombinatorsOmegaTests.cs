@@ -19,7 +19,7 @@ public class CombinatorsOmegaTests
         var Sum1 = SumSA(SumSA);
         var Sum2 = ItSelf((SelfApplicable<Func<Numeral, Numeral>>)SumSA);
 
-        var cx = x.AsChurch();
+        var cx = x.ToChurch();
         var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
         Assert.Equal(expected, Sum1(cx).UnChurch());
         Assert.Equal(expected, Sum2(cx).UnChurch());

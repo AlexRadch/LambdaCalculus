@@ -14,7 +14,7 @@ public class Bool_If_Bench
     [Benchmark(Baseline = true)]
     public void If()
     {
-        var P = Pridicate.AsChurch();
+        var P = Pridicate.ToChurch();
 
         for (var i = 0; i < Count; i++)
             Church.If(P)(Church.True)(Church.False);
@@ -23,7 +23,7 @@ public class Bool_If_Bench
     [Benchmark]
     public void If_P()
     {
-        var P = Pridicate.AsChurch();
+        var P = Pridicate.ToChurch();
 
         for (var i = 0; i < Count; i++)
             P(Church.True)(Church.False);

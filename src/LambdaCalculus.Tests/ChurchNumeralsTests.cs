@@ -58,9 +58,9 @@ public class ChurchNumeralsTests
 
     [Theory]
     [MemberData(nameof(GetUIntsData1))]
-    public void AsChurchTest(uint value)
+    public void ToChurchTest(uint value)
     {
-        var cv = value.AsChurch();
+        var cv = value.ToChurch();
 
         foreach (var succ in GetIntNexts())
         {
@@ -88,7 +88,7 @@ public class ChurchNumeralsTests
         }
 
         {
-            var cv = value.AsChurch();
+            var cv = value.ToChurch();
             Assert.Equal(value, cv.UnChurch());
         }
     }
@@ -187,20 +187,20 @@ public class ChurchNumeralsTests
         Assert.Equal(expected, result.UnChurch());
 
         if (expected <= 10)
-            Assert.Equal((uint)Math.Pow(expected, 2), Exp(result)(2u.AsChurch()).UnChurch());
+            Assert.Equal((uint)Math.Pow(expected, 2), Exp(result)(2u.ToChurch()).UnChurch());
 
         result = Exp_Mult(cm)(cn);
         Assert.Equal(expected, result.UnChurch());
 
         if (expected <= 10)
-            Assert.Equal((uint)Math.Pow(expected, 2), Exp_Mult(result)(2u.AsChurch()).UnChurch());
+            Assert.Equal((uint)Math.Pow(expected, 2), Exp_Mult(result)(2u.ToChurch()).UnChurch());
     }
 
     [Theory]
     [MemberData(nameof(GetUIntsData1))]
     public void PredTest(uint value)
     {
-        var cv = Pred(value.AsChurch());
+        var cv = Pred(value.ToChurch());
 
         foreach (var succ in GetIntNexts())
         {
@@ -220,7 +220,7 @@ public class ChurchNumeralsTests
     public void MinusTest(uint m, uint n)
     {
         var expected = m > n ? m - n : 0u;
-        var result = Minus(m.AsChurch())(n.AsChurch());
+        var result = Minus(m.ToChurch())(n.ToChurch());
         Assert.Equal(expected, result.UnChurch());
         Assert.Equal(expected + 1 - expected, Minus(Succ(result))(result).UnChurch());
     }
@@ -230,7 +230,7 @@ public class ChurchNumeralsTests
     public void DiffTest(uint m, uint n)
     {
         var expected = m > n ? m - n : n - m;
-        var result = Diff(m.AsChurch())(n.AsChurch());
+        var result = Diff(m.ToChurch())(n.ToChurch());
         Assert.Equal(expected, result.UnChurch());
         Assert.Equal(expected + 1 - expected, Diff(Succ(result))(result).UnChurch());
         Assert.Equal(expected + 1 - expected, Diff(result)(Succ(result)).UnChurch());
@@ -240,8 +240,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void MinTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(Math.Min(m, n), Min(cm)(cn).UnChurch());
     }
 
@@ -249,8 +249,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void MaxTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(Math.Max(m, n), Max(cm)(cn).UnChurch());
     }
 
@@ -261,8 +261,8 @@ public class ChurchNumeralsTests
         if (n == 0)
             return;
 
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m / n, DivideR_mn(cm)(cn).UnChurch());
 
         Assert.Equal((m > 0 ? (m - 1) : 0) / n, Divide1R(cm)(cn).UnChurch());
@@ -291,7 +291,7 @@ public class ChurchNumeralsTests
         if (x > 5)
             return;
 
-        var cx = x.AsChurch();
+        var cx = x.ToChurch();
         var expected = 1u;
         for (uint i = 1; i <= x; i++)
             expected *= i;
@@ -311,7 +311,7 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData1))]
     public void FibonacciTest(uint x)
     {
-        var cx = x.AsChurch();
+        var cx = x.ToChurch();
         var expected = fib(x);
 
         Assert.Equal(expected, FibonacciR(cx).UnChurch());
@@ -328,7 +328,7 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData1))]
     public void IsZeroTest(uint value)
     {
-        var cv = value.AsChurch();
+        var cv = value.ToChurch();
         Assert.Equal(value == 0, IsZero(cv).UnChurch());
     }
 
@@ -336,8 +336,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void GEQTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m >= n, GEQ(cm)(cn).UnChurch());
     }
 
@@ -345,8 +345,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void LEQTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m <= n, LEQ(cm)(cn).UnChurch());
     }
 
@@ -354,8 +354,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void GTTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m > n, GT(cm)(cn).UnChurch());
     }
 
@@ -363,8 +363,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void LTTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m < n, LT(cm)(cn).UnChurch());
     }
 
@@ -372,8 +372,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void EQTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m == n, EQ(cm)(cn).UnChurch());
     }
 
@@ -381,8 +381,8 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetUIntsData2))]
     public void NEQTest(uint m, uint n)
     {
-        var cm = m.AsChurch();
-        var cn = n.AsChurch();
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
         Assert.Equal(m != n, NEQ(cm)(cn).UnChurch());
     }
 

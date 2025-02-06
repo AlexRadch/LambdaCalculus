@@ -6,7 +6,7 @@ public static class ChurchMath
 {
     public static uint GcdEuclideanMinus(uint a, uint b)
     {
-        return EuclideanMinus(a.AsChurch(), b.AsChurch()).UnChurch();
+        return EuclideanMinus(a.ToChurch(), b.ToChurch()).UnChurch();
     }
 
     static Numeral EuclideanMinus(Numeral a, Numeral b)

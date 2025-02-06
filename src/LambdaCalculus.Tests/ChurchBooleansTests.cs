@@ -41,13 +41,13 @@ public class ChurchBooleansTests
 
     [Theory]
     [MemberData(nameof(GetBoolsData))]
-    public void AsChurchTest(bool b)
+    public void ToChurchTest(bool b)
     {
         foreach(var @true in GetDynamics())
             foreach (var @false in GetDynamics())
             {
                 var expected = b ? @true : @false;
-                Assert.Equal(expected, b.AsChurch()(@true)(@false));
+                Assert.Equal(expected, b.ToChurch()(@true)(@false));
             }
     }
 
@@ -55,7 +55,7 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData))]
     public void UnChurchTest(bool a)
     {
-        var ca = a.AsChurch();
+        var ca = a.ToChurch();
         Assert.Equal(a, ca.UnChurch());
 
         var la = () => ca;
@@ -73,7 +73,7 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData))]
     public void NotTest(bool a)
     {
-        var ca = a.AsChurch();
+        var ca = a.ToChurch();
         Assert.Equal(!a, Not(ca).UnChurch());
         Assert.Equal(a, Not(Not(ca)).UnChurch());
 
@@ -89,8 +89,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData2))]
     public void OrTest(bool a, bool b)
     {
-        var ca = a.AsChurch();
-        var cb = b.AsChurch();
+        var ca = a.ToChurch();
+        var cb = b.ToChurch();
         var expected = a || b;
         Assert.Equal(expected, Or(ca)(cb).UnChurch());
 
@@ -111,8 +111,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData2))]
     public void AndTest(bool a, bool b)
     {
-        var ca = a.AsChurch();
-        var cb = b.AsChurch();
+        var ca = a.ToChurch();
+        var cb = b.ToChurch();
         var expected = a && b;
         Assert.Equal(expected, And(ca)(cb).UnChurch());
 
@@ -133,8 +133,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData2))]
     public void XorTest(bool a, bool b)
     {
-        var ca = a.AsChurch();
-        var cb = b.AsChurch();
+        var ca = a.ToChurch();
+        var cb = b.ToChurch();
         Assert.Equal(a ^ b, Xor(ca)(cb).UnChurch());
     }
 
@@ -142,8 +142,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData2))]
     public void NorTest(bool a, bool b)
     {
-        var ca = a.AsChurch();
-        var cb = b.AsChurch();
+        var ca = a.ToChurch();
+        var cb = b.ToChurch();
         var expected = !(a || b);
         Assert.Equal(expected, Nor(ca)(cb).UnChurch());
         Assert.Equal(expected, Nor_not(ca)(cb).UnChurch());
@@ -165,8 +165,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData2))]
     public void NandTest(bool a, bool b)
     {
-        var ca = a.AsChurch();
-        var cb = b.AsChurch();
+        var ca = a.ToChurch();
+        var cb = b.ToChurch();
         Assert.Equal(!(a && b), Nand(ca)(cb).UnChurch());
     }
 
@@ -174,8 +174,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData2))]
     public void XnorTest(bool a, bool b)
     {
-        var ca = a.AsChurch();
-        var cb = b.AsChurch();
+        var ca = a.ToChurch();
+        var cb = b.ToChurch();
         Assert.Equal(a == b, Xnor(ca)(cb).UnChurch());
     }
 
@@ -191,7 +191,7 @@ public class ChurchBooleansTests
             foreach (var @else in GetDynamics())
             {
                 var expected = b ? @then : @else;
-                var @bool = b.AsChurch();
+                var @bool = b.ToChurch();
 
                 Assert.Equal(expected, If(@bool)(@then)(@else));
                 Assert.Equal(expected, @bool(@then)(@else)); // predicate should work them self also
@@ -219,7 +219,7 @@ public class ChurchBooleansTests
         while (bItems.Count < len)
         {
             var bv = random.NextDouble() >= 0.5;
-            var cv = bv.AsChurch();
+            var cv = bv.ToChurch();
             Assert.Equal(bv, cv.UnChurch());
 
             bItems.Add(bv);

@@ -17,7 +17,7 @@ public class CombinatorsYZTests
     [MemberData(nameof(GetUIntsData1))]
     public void ItSelfTest(uint x)
     {
-        var cx = x.AsChurch();
+        var cx = x.ToChurch();
         var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
 
         Func<Numeral, Numeral> Sum2 = SumSA(SumSA(SumSA(null!)));

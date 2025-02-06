@@ -93,15 +93,15 @@ public static partial class Church
     public static Func<T> AsLazy<T>(Func<T> value) => value;
 
     // System bool to Boolean
-    // AsChurch := b => b ? True : False
-    public static Boolean AsChurch(this bool b) => b ? True : False;
+    // ToChurch := b => b ? True : False
+    public static Boolean ToChurch(this bool b) => b ? True : False;
 
     // Church Boolean to system bool
-    // Unchurch := λb. If b true false := b true false
+    // UnChurch := λb. If b true false := b true false
     public static bool UnChurch(this Boolean b) => b(true)(false); // Boolean works them self
 
     // Church lazy Boolean to system bool
-    // Unchurch := λb. If b() true false := b() true false
+    // UnChurch := λb. UnChurch b()
     public static bool UnChurch(this Func<Boolean> b) => b().UnChurch();
 
     #endregion
