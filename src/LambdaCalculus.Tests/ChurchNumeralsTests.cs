@@ -54,7 +54,7 @@ public class ChurchNumeralsTests
 
     #endregion
 
-    #region Conversations
+    #region Convertions
 
     [Theory]
     [MemberData(nameof(GetUIntsData1))]
@@ -280,6 +280,29 @@ public class ChurchNumeralsTests
         Assert.Equal(m / n, Divide(cm)(cn).UnChurch());
     }
 
+    [Theory]
+    [MemberData(nameof(GetUIntsData2))]
+    public void ModuloTest(uint m, uint n)
+    {
+        if (n == 0)
+            return;
+
+        var cm = m.ToChurch();
+        var cn = n.ToChurch();
+        Assert.Equal(m % n, ModuloR_mn(cm)(cn).UnChurch());
+
+        {
+            Func<Numeral, Func<Numeral, Numeral>> mod1 = Mod1(null!);
+            if (Minus(cm)(cn).UnChurch() == 0)
+                Assert.Equal((m > 0 ? (m - 1) : 0) % n, mod1(cm)(cn).UnChurch());
+            else
+                Assert.Throws<NullReferenceException>(() => mod1(cm)(cn));
+        }
+
+        //Assert.Equal((m > 0 ? (m - 1) : 0) % n, Modulo1(cm)(cn).UnChurch());
+        Assert.Equal(m % n, Modulo(cm)(cn).UnChurch());
+    }
+
     #endregion
 
     #region Functions
@@ -386,6 +409,22 @@ public class ChurchNumeralsTests
         Assert.Equal(m != n, NEQ(cm)(cn).UnChurch());
     }
 
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void IsEvenTest(uint value)
+    {
+        var cv = value.ToChurch();
+        Assert.Equal(value % 2 == 0, IsEven(cv).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void IsOddTest(uint value)
+    {
+        var cv = value.ToChurch();
+        Assert.Equal(value % 2 != 0, IsOdd(cv).UnChurch());
+    }
+
     #endregion
 
     #region GetData
@@ -400,26 +439,17 @@ public class ChurchNumeralsTests
     public static IEnumerable<object[]> GetIntNextsData() => 
         GetIntNexts().Select(x => new object[] { x });
 
-    public static IEnumerable<int> GetInts()
-    {
-        yield return 0;
-        yield return 5;
-        yield return -3;
-    }
-
-    public static IEnumerable<object[]> GetIntsData() =>
-        GetInts().Select(x => new object[] { x });
+    public static IEnumerable<int> GetInts() => ChurchSignedNumbersTests.GetInts();
 
     public static IEnumerable<uint> GetUInts()
     {
         yield return 0;
         yield return 1;
-        yield return 3;
-        yield return 9;
+        yield return 4;
+        yield return 5;
     }
 
-    public static IEnumerable<object[]> GetUIntsData1() =>
-        GetUInts().Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetUIntsData1() => GetUInts().Select(x => new object[] { x });
 
     public static IEnumerable<object[]> GetUIntsData2() =>
         from m in GetUInts()

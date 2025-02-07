@@ -118,13 +118,13 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Numeral> DivideR(Numeral m) => Divide1R(Succ(m));
 
-    // Div1 :⁡= λc.λm.λn (λd.IsZero⁡ d 0 (1 + (c d n))) (Minus⁡ m n)
+    // Div1 :⁡= λf.λm.λn (λd.IsZero⁡ d 0 (1 + (f d n))) (Minus⁡ m n)
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Func<Numeral, Numeral>> Div1(Func<Numeral, Func<Numeral, Numeral>> c) => m => n =>
+    public static Func<Numeral, Func<Numeral, Numeral>> Div1(Func<Numeral, Func<Numeral, Numeral>> f) => m => n =>
         new Func<Numeral, Numeral>(d =>
         LazyIf(IsZero(d))
             (LazyZero)
-            (() => Succ(c(d)(n)))
+            (() => Succ(f(d)(n)))
         )
         (Minus(m)(n));
 
@@ -134,6 +134,32 @@ public static partial class Church
 
     // Divide ⁡:= λm. Divide1 (m + 1)
     public static Func<Numeral, Numeral> Divide(Numeral m) => Divide1(Succ(m));
+
+    //public static Func<Numeral, Numeral> Modulo(Numeral m) => Divide1(Succ(m));
+
+    #endregion
+
+    #region Modulo
+
+    // ModuloR_mn ⁡:= λm.λn. if⁡ m >= n then⁡ (m − n) % n else⁡ m
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Numeral> ModuloR_mn(Numeral m) => n =>
+        LazyIf(GEQ(m)(n))
+            (() => ModuloR_mn(Minus(m)(n))(n))
+            (() => m);
+
+    // Mod1 :⁡= λf.λm.λn (λd.IsZero⁡ d (m - 1) (f d n)) (Minus⁡ m n)
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static Func<Numeral, Func<Numeral, Numeral>> Mod1(Func<Numeral, Func<Numeral, Numeral>> f) => m => n =>
+        new Func<Numeral, Numeral>(d =>
+        LazyIf(IsZero(d))
+            (() => Pred(m))
+            (() => f(d)(n))
+        )
+        (Minus(m)(n));
+
+    // Modulo ⁡:= λm. Z Div1 (m + 1)
+    public static Func<Numeral, Numeral> Modulo(Numeral m) => Combinators.Z<Numeral, Func<Numeral, Numeral>>(Mod1)(Succ(m));
 
     #endregion
 
@@ -170,7 +196,7 @@ public static partial class Church
     #region Logical
 
     // IsZero := λn. n (λx. False) True
-    public static Boolean IsZero(Numeral n) => n(x => False)(True);
+    public static Boolean IsZero(Numeral n) => n(f => False)(True);
 
     // GEQ := λm.λn. IsZero (Minus n m)
     public static Func<dynamic, Boolean> GEQ(Numeral m) => n => IsZero(Minus(n)(m));
@@ -189,6 +215,12 @@ public static partial class Church
 
     // NEQ := λm.λn. Not (EQ m n)
     public static Func<dynamic, Boolean> NEQ(Numeral m) => n => Not(EQ(m)(n));
+
+    // IsEven := λn. n Not True
+    public static Boolean IsEven(Numeral n) => n(f => Not(f))(True);
+
+    // IsOdd := λn. n Not False
+    public static Boolean IsOdd(Numeral n) => n(f => Not(f))(False);
 
     #endregion
 
