@@ -1,11 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using static LambdaCalculus.Church;
 
 namespace LambdaCalculus;
-
-// Next := λn. next n
-//using NextNumeral = Func<dynamic, dynamic>;
 
 public static partial class Church
 {
@@ -35,7 +31,7 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     //public static readonly Numeral Zero_False = False;
     //public static readonly Numeral Zero_False = f => z => False(f)(z);
-    public static readonly Numeral Zero_False = f => z => FalseF<dynamic, dynamic>(f)(z);
+    public static readonly Numeral Zero_False = f => z => FalseF<NextNumeral, dynamic>(f)(z);
     //public static readonly Numeral Zero_False = ZeroF_False;
 
     // One := λf.λz. f z := λf f := Id
@@ -165,6 +161,37 @@ public static partial class Church
 
     #endregion
 
+    #region Logical
+
+    // IsZero := λn. n (λx. False) True
+    public static Boolean IsZero(Numeral n) => n(f => False)(True);
+
+    // GEQ := λm.λn. IsZero (Minus n m)
+    public static Func<Numeral, Boolean> GEQ(Numeral m) => n => IsZero(Minus(n)(m));
+
+    // LEQ := λm.λn. IsZero (Minus m n)
+    public static Func<Numeral, Boolean> LEQ(Numeral m) => n => IsZero(Minus(m)(n));
+
+    // GT := λm.λn. Not (LEQ m n)
+    public static Func<Numeral, Boolean> GT(Numeral m) => n => Not(LEQ(m)(n));
+
+    // LT := λm.λn. Not (GEQ m n)
+    public static Func<Numeral, Boolean> LT(Numeral m) => n => Not(GEQ(m)(n));
+
+    // EQ := λm.λn. And (LEQ m n) (LEQ n m)
+    public static Func<Numeral, Boolean> EQ(Numeral m) => n => And(LEQ(m)(n))(LEQ(n)(m));
+
+    // NEQ := λm.λn. Not (EQ m n)
+    public static Func<Numeral, Boolean> NEQ(Numeral m) => n => Not(EQ(m)(n));
+
+    // IsEven := λn. n Not True
+    public static Boolean IsEven(Numeral n) => n(f => Not(f))(True);
+
+    // IsOdd := λn. n Not False
+    public static Boolean IsOdd(Numeral n) => n(f => Not(f))(False);
+
+    #endregion
+
     #region Functions
 
     // FactorialR := λx. If (x == 0) (1) (x * (FactorialR (x - 1)))
@@ -190,37 +217,6 @@ public static partial class Church
 
     // Factorial ⁡:= Z Fact
     public static readonly Func<Numeral, Numeral> Fibonacci = Combinators.Z<Numeral, Numeral>(Fib);
-
-    #endregion
-
-    #region Logical
-
-    // IsZero := λn. n (λx. False) True
-    public static Boolean IsZero(Numeral n) => n(f => False)(True);
-
-    // GEQ := λm.λn. IsZero (Minus n m)
-    public static Func<dynamic, Boolean> GEQ(Numeral m) => n => IsZero(Minus(n)(m));
-
-    // LEQ := λm.λn. IsZero (Minus m n)
-    public static Func<dynamic, Boolean> LEQ(Numeral m) => n => IsZero(Minus(m)(n));
-
-    // GT := λm.λn. Not (LEQ m n)
-    public static Func<dynamic, Boolean> GT(Numeral m) => n => Not(LEQ(m)(n));
-
-    // LT := λm.λn. Not (GEQ m n)
-    public static Func<dynamic, Boolean> LT(Numeral m) => n => Not(GEQ(m)(n));
-
-    // EQ := λm.λn. And (LEQ m n) (LEQ n m)
-    public static Func<dynamic, Boolean> EQ(Numeral m) => n => And(LEQ(m)(n))(LEQ(n)(m));
-
-    // NEQ := λm.λn. Not (EQ m n)
-    public static Func<dynamic, Boolean> NEQ(Numeral m) => n => Not(EQ(m)(n));
-
-    // IsEven := λn. n Not True
-    public static Boolean IsEven(Numeral n) => n(f => Not(f))(True);
-
-    // IsOdd := λn. n Not False
-    public static Boolean IsOdd(Numeral n) => n(f => Not(f))(False);
 
     #endregion
 

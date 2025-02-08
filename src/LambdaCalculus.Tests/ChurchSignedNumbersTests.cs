@@ -101,6 +101,14 @@ public class ChurchSignedNumbersTests
     }
 
     [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void AbsSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(Math.Abs(x), AbsS(cx).UnChurch());
+    }
+
+    [Theory]
     [MemberData(nameof(GetIntsData2))]
     public void PlusSTest(int x, int y)
     {
@@ -147,6 +155,137 @@ public class ChurchSignedNumbersTests
 
         var expected = y == 0 ? 0 : x % y;
         Assert.Equal(expected, ModuloS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void ExpSTest(int x, int y)
+    {
+        if (Math.Abs(y) > 3)
+            return;
+
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+
+        var expected = (int)Math.Pow(x, y);
+        if (expected == int.MaxValue)
+            expected = 0;
+
+        Assert.Equal(expected, ExpS(cx)(cy).UnChurch());
+    }
+
+    #endregion
+
+    #region Logical
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsZeroSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x == 0, IsZeroS(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsPosSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x > 0, IsPosS(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsNegSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x < 0, IsNegS(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsZPosSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x >= 0, IsZPosS(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsZNegSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x <= 0, IsZNegS(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void GEQSTest(int x, int y)
+    {
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+        Assert.Equal(x >= y, GEQS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void LEQSTest(int x, int y)
+    {
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+        Assert.Equal(x <= y, LEQS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void GTSTest(int x, int y)
+    {
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+        Assert.Equal(x > y, GTS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void LTSTest(int x, int y)
+    {
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+        Assert.Equal(x < y, LTS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void EQSTest(int x, int y)
+    {
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+        Assert.Equal(x == y, EQS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData2))]
+    public void NEQSTest(int x, int y)
+    {
+        var cx = x.ToChurch();
+        var cy = y.ToChurch();
+        Assert.Equal(x != y, NEQS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsEvenSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x % 2 == 0, IsEvenS(cx).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void IsOddSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x % 2 != 0, IsOddS(cx).UnChurch());
     }
 
     #endregion

@@ -39,6 +39,9 @@ public static partial class Church
     // NegS = λx. pair⁡ (second⁡ x) (first⁡ x)
     public static Signed NegS(Signed x) => b => x(px => nx => CreatePair<Numeral, Numeral>(nx)(px)(b));
 
+    // AbsS = λx. x (λpx.λnx. CreatePair (Diff(px)(nx)) (Zero))
+    public static Signed AbsS(Signed x) => b => x(px => nx => CreatePair<Numeral, Numeral>(Diff(px)(nx))(Zero)(b));
+
     // PlusS = λx.λy. OneZero⁡(pair⁡ (plus⁡ (first⁡ x) (first⁡ y)) (plus⁡ (second⁡ x) (second⁡ y)))
     public static Func<Signed, Signed> PlusS(Signed x) => y => x(px => nx => y(py => ny => 
         CreateSigned(Plus(px)(py))(Plus(nx)(ny))));
@@ -69,6 +72,74 @@ public static partial class Church
     // (plus⁡ (ModZ⁡ (second⁡ x) (second⁡ y)) (ModZ⁡ (second⁡ x) (first⁡ y)))
     public static Func<Signed, Signed> ModuloS(Signed x) => y => x(px => nx => y(py => ny =>
         CreateSigned(Plus(ModZ(px)(py))(ModZ(px)(ny)))(Plus(ModZ(nx)(ny))(ModZ(nx)(py)))));
+
+    #region ExpS
+
+    //// ExpS := λx.λy IsNegS y
+    ////     (y (λpy.λny. DivideS OneS ((ny - py) (λr. MultS r x) (OneS))))
+    ////     (y (λpy.λny. (py - ny) (λr. MultS r x) (OneS)))
+    //public static Func<Signed, Signed> ExpS(Signed x) => y => 
+    //    LazyIf(IsNegS(y))
+    //        (() => y(py => ny => DivideS(NumeralToSigned(One))(Minus(ny)(py)(r => MultS(r)(x))(NumeralToSigned(One)))))
+    //        (() => y(py => ny => Minus(py)(ny)(r => MultS(r)(x))(NumeralToSigned(One))));
+
+    // ExpS := λx.λy IsNegS y (λpy.λny.
+    //     (λd IsZero d
+    //         (DivideS OneS ((ny - py) (λr. MultS r x) (OneS)))
+    //         (d (r => MultS(r)(x)) OneS)
+    //     )
+    //     (py - ny) )
+    public static Func<Signed, Signed> ExpS(Signed x) => y => y(py => ny =>
+        new Func<Numeral, Signed>(d => LazyIf(IsZero⁡(d))
+            (() => DivideS(NumeralToSigned(One))(Minus(ny)(py)(r => MultS(r)(x))(NumeralToSigned(One))))
+            (() => d(r => MultS(r)(x))(NumeralToSigned(One)))
+        )
+        (Minus(py)(ny)));
+
+    #endregion
+
+    #endregion
+
+    #region Logical
+
+    // IsZeroS := λx. x (λpx.λnx. EQ p n)
+    public static Boolean IsZeroS(Signed x) => x(px => nx => EQ(px)(nx));
+
+    // IsPosS := λx. x (λpx.λnx. GT p n)
+    public static Boolean IsPosS(Signed x) => x(px => nx => GT(px)(nx));
+
+    // IsNegS := λx. x (λpx.λnx. LT p n)
+    public static Boolean IsNegS(Signed x) => x(px => nx => LT(px)(nx));
+
+    // IsZPosS := λx. x (λpx.λnx. GEQ p n)
+    public static Boolean IsZPosS(Signed x) => x(px => nx => GEQ(px)(nx));
+
+    // IsZNegS := λx. x (λpx.λnx. GEQ p n)
+    public static Boolean IsZNegS(Signed x) => x(px => nx => LEQ(px)(nx));
+
+    // GEQS := λx.λy. IsZPosS (MinusS x y)
+    public static Func<Signed, Boolean> GEQS(Signed x) => y => IsZPosS(MinusS(x)(y));
+
+    // LEQS := λx.λy. IsZNegS (MinusS x y)
+    public static Func<Signed, Boolean> LEQS(Signed x) => y => IsZNegS(MinusS(x)(y));
+
+    // GTS := λx.λy. IsPosS (MinusS x y)
+    public static Func<Signed, Boolean> GTS(Signed x) => y => IsPosS(MinusS(x)(y));
+
+    // LTS := λx.λy. IsNegS (MinusS x y)
+    public static Func<Signed, Boolean> LTS(Signed x) => y => IsNegS(MinusS(x)(y));
+
+    // EQS := λx.λy. IsZeroS (MinusS x y)
+    public static Func<Signed, Boolean> EQS(Signed x) => y => IsZeroS(MinusS(x)(y));
+
+    // NEQS := λx.λy. Not (IsZeroS (MinusS x y))
+    public static Func<Signed, Boolean> NEQS(Signed x) => y => Not(IsZeroS(MinusS(x)(y)));
+
+    // IsEvenS := λx. x (λpx.λnx. Xor (IsEven p) (IsOdd n))
+    public static Boolean IsEvenS(Signed x) => x(px => nx => Xor(IsEven(px))(IsOdd(nx)));
+
+    // IsOddS := λx. x (λpx.λnx. Xor (IsEven p) (IsEven n))
+    public static Boolean IsOddS(Signed x) => x(px => nx => Xor(IsEven(px))(IsEven(nx)));
 
     #endregion
 
