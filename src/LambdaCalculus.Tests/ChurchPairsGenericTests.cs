@@ -10,7 +10,7 @@ public class ChurchPairsGenericTests
     [MemberData(nameof(GetDynamicsData2))]
     public void CreatePairTest(object first, object second)
     {
-        var pair = CreatePair<dynamic, dynamic>(first)(second);
+        var pair = Pair<dynamic, dynamic>(first)(second);
         Assert.Equal(first, pair(TrueF<dynamic, dynamic>));
         Assert.Equal(second, pair(FalseF<dynamic, dynamic>));
     }
@@ -19,7 +19,7 @@ public class ChurchPairsGenericTests
     [MemberData(nameof(GetUIntsData2))]
     public void CreateUIntPairTest(uint first, uint second)
     {
-        var pair = CreatePair<uint, uint>(first)(second);
+        var pair = Pair<uint, uint>(first)(second);
         Assert.Equal(first, pair(f => s => f));
         Assert.Equal(second, pair(f => s => s));
     }
@@ -28,7 +28,7 @@ public class ChurchPairsGenericTests
     [MemberData(nameof(GetDynamicsData2))]
     public void FirstTest(object first, object second)
     {
-        var pair = CreatePair<dynamic, dynamic>(first)(second);
+        var pair = Pair<dynamic, dynamic>(first)(second);
         Assert.Equal(first, First(pair));
     }
 
@@ -36,7 +36,7 @@ public class ChurchPairsGenericTests
     [MemberData(nameof(GetDynamicsData2))]
     public void SecondTest(object first, object second)
     {
-        var pair = CreatePair<dynamic, dynamic>(first)(second);
+        var pair = Pair<dynamic, dynamic>(first)(second);
         Assert.Equal(second, Second(pair));
     }
 
@@ -48,7 +48,7 @@ public class ChurchPairsGenericTests
     [MemberData(nameof(GetDynamicsData2))]
     public void UnChurchTest(object first, object second)
     {
-        var pair = CreatePair<dynamic, dynamic>(first)(second);
+        var pair = Pair<dynamic, dynamic>(first)(second);
         Assert.Equal((first, second), pair.UnChurch());
     }
 
@@ -56,7 +56,7 @@ public class ChurchPairsGenericTests
     [MemberData(nameof(GetUIntsData2))]
     public void UnChurchUIntTest(uint first, uint second)
     {
-        var pair = CreatePair<uint, uint>(first)(second);
+        var pair = Pair<uint, uint>(first)(second);
         Assert.Equal((first, second), pair.UnChurch());
     }
 

@@ -7,30 +7,30 @@ public static partial class Church
 {
     #region Delegates
 
-    // Pair := λb. First|Second
+    // CPair := λb. (λf.λs. )
     [DebuggerDisplay("{LambdaCalculus.Church.UnChurch(this)}")]
-    public delegate dynamic Pair(Func<dynamic, Func<dynamic, dynamic>> b);
+    public delegate dynamic CPair(Boolean b);
 
     #endregion
 
     #region Operations
 
-    // CreatePair := λf.λs.λb. b f s
-    public static Func<dynamic, Pair> CreatePair(dynamic f) => s => b => b(f)(s);
+    // Pair := λf.λs.λb. b f s
+    public static Func<dynamic, CPair> Pair(dynamic f) => s => b => b(f)(s);
 
     // First := λp. p (λf.λs. f) := λp. p True
-    public static dynamic First(Pair p) => p(f => s => f);
+    public static dynamic First(CPair p) => p(f => s => f);
 
     // Second := λp. p (λf.λs. s) := λp. p False
-    public static dynamic Second(Pair p) => p(f => s => s);
+    public static dynamic Second(CPair p) => p(f => s => s);
 
     #endregion
 
     #region Extensions
 
-    // Church Pair to (dynamic, dynamic) value tupple
+    // Church CPair to (dynamic, dynamic) value tupple
     // UnChurch := λp. (λf.λs. (f, s))
-    public static (dynamic First, dynamic Second) UnChurch(this Pair p) => p(f => s => (f, s));
+    public static (dynamic First, dynamic Second) UnChurch(this CPair p) => p(f => s => (f, s));
 
     #endregion
 }

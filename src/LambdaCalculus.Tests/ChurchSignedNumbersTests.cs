@@ -72,7 +72,7 @@ public class ChurchSignedNumbersTests
     [MemberData(nameof(GetUIntsData2))]
     public void OneZeroTest(uint p, uint n)
     {
-        Signed cv = b => CreatePair<Numeral, Numeral>(p.ToChurch())(n.ToChurch())(b);
+        Signed cv = b => Pair<Numeral, Numeral>(p.ToChurch())(n.ToChurch())(b);
         Numeral cp = cv(cp => cn => cp);
         Numeral cn = cv(cp => cn => cn);
         Assert.Equal(p, cp.UnChurch());

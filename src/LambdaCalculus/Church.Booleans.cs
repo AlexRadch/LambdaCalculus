@@ -10,6 +10,7 @@ public static partial class Church
     // Boolean := λt.λf. t|f
     [DebuggerDisplay("{LambdaCalculus.Church.UnChurch(this)}")]
     public delegate Func<dynamic, dynamic> Boolean(dynamic @true);
+    public delegate Func<F, dynamic> Boolean<in T, in F>(T @true);
 
     #endregion
 

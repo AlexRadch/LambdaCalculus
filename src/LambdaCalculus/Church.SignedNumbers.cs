@@ -7,21 +7,22 @@ public static partial class Church
 {
     #region Delegates
 
+    // Signed := CPair<Numeral, Numeral> := λf. (λp.λn. )
     [DebuggerDisplay("{LambdaCalculus.Church.UnChurch(this)}")]
-    public delegate dynamic Signed(Func<Numeral, Func<Numeral, dynamic>> b);
+    public delegate dynamic Signed(Boolean<Numeral, Numeral> b);
 
     #endregion
 
     #region Convertions
 
     // CreateSigned := λp.λn CreatePair (p - n) (n - p)
-    public static Func<Numeral, Signed> CreateSigned(Numeral p) => n => b => CreatePair<Numeral, Numeral>(Minus(p)(n))(Minus(n)(p))(b);
+    public static Func<Numeral, Signed> CreateSigned(Numeral p) => n => b => Pair<Numeral, Numeral>(Minus(p)(n))(Minus(n)(p))(b);
 
     // NumeralToSigned := λx. CreatePair x 0
-    public static Signed NumeralToSigned(Numeral x) => b => CreatePair<Numeral, Numeral>(x)(Zero)(b);
+    public static Signed NumeralToSigned(Numeral x) => b => Pair<Numeral, Numeral>(x)(Zero)(b);
 
     // NumeralToNegSigned := λx. CreatePair 0 x
-    public static Signed NumeralToNegSigned(Numeral x) => b => CreatePair<Numeral, Numeral>(Zero)(x)(b);
+    public static Signed NumeralToNegSigned(Numeral x) => b => Pair<Numeral, Numeral>(Zero)(x)(b);
 
     // SignedToAbsNumeral := λx. x (λpx.λnx. Diff(px)(nx))
     public static Numeral SignedToAbsNumeral(Signed x) => x(px => nx => Diff(px)(nx));
@@ -37,10 +38,10 @@ public static partial class Church
     #region Arithmetic
 
     // NegS = λx. pair⁡ (second⁡ x) (first⁡ x)
-    public static Signed NegS(Signed x) => b => x(px => nx => CreatePair<Numeral, Numeral>(nx)(px)(b));
+    public static Signed NegS(Signed x) => b => x(px => nx => Pair<Numeral, Numeral>(nx)(px)(b));
 
     // AbsS = λx. x (λpx.λnx. CreatePair (Diff(px)(nx)) (Zero))
-    public static Signed AbsS(Signed x) => b => x(px => nx => CreatePair<Numeral, Numeral>(Diff(px)(nx))(Zero)(b));
+    public static Signed AbsS(Signed x) => b => x(px => nx => Pair<Numeral, Numeral>(Diff(px)(nx))(Zero)(b));
 
     // PlusS = λx.λy. OneZero⁡(pair⁡ (plus⁡ (first⁡ x) (first⁡ y)) (plus⁡ (second⁡ x) (second⁡ y)))
     public static Func<Signed, Signed> PlusS(Signed x) => y => x(px => nx => y(py => ny => 
