@@ -4,7 +4,7 @@ using static LambdaCalculus.Church;
 
 public class ChurchListsTests
 {
-    #region Operations
+    #region Constants
 
     [Fact]
     public void NilTest()
@@ -12,17 +12,21 @@ public class ChurchListsTests
         {
             ListNode nil = NilF;
 
-            Boolean result = nil(False)(True);
+            Boolean result = nil(h => t => False)(True);
             Assert.True(result.UnChurch());
         }
         {
 
             var nil = Nil;
 
-            Boolean result = nil(False)(True);
+            Boolean result = nil(h => t => False)(True);
             Assert.True(result.UnChurch());
         }
     }
+
+    #endregion
+
+    #region Constructors
 
     [Fact]
     public void ConsTest()
@@ -31,17 +35,21 @@ public class ChurchListsTests
         Assert.Equal(Nil, list0);
 
         var list1 = Cons(1)(list0);
-        Assert.Equal(1, (int)list1(True));
-        Assert.Equal(list0, (ListNode)list1(False));
+        Assert.Equal(1, (int)list1(h => t => h));
+        Assert.Equal(list0, list1(h => t => t));
 
         var list2 = Cons(2)(list1);
-        Assert.Equal(2, (int)list2(True));
-        Assert.Equal(list1, (ListNode)list2(False));
+        Assert.Equal(2, (int)list2(h => t => h));
+        Assert.Equal(list1, (ListNode)list2(h => t => t));
 
         var list3 = Cons(3)(list2);
-        Assert.Equal(3, (int)list3(True));
-        Assert.Equal(list2, (ListNode)list3(False));
+        Assert.Equal(3, (int)list3(h => t => h));
+        Assert.Equal(list2, (ListNode)list3(h => t => t));
     }
+
+    #endregion
+
+    #region Properties
 
     [Fact]
     public void HeadTest()
@@ -73,10 +81,6 @@ public class ChurchListsTests
         Assert.Equal(list2, Tail(list3));
     }
 
-    #endregion
-
-    #region Logical
-
     [Fact]
     public void IsNilTest()
     {
@@ -91,6 +95,279 @@ public class ChurchListsTests
 
         var list3 = Cons(3)(list2);
         Assert.False(IsNil(list3).UnChurch());
+    }
+
+    [Fact]
+    public void LengthTest()
+    {
+        var list0 = Nil;
+        var result = Length(list0);
+        Assert.Equal(0u, result.UnChurch());
+
+        var list1 = Cons(1)(list0);
+        result = Length(list1);
+        Assert.Equal(1u, result.UnChurch());
+
+        var list2 = Cons(2)(list1);
+        result = Length(list2);
+        Assert.Equal(2u, result.UnChurch());
+
+        var list3 = Cons(3)(list2);
+        result = Length(list3);
+        Assert.Equal(3u, result.UnChurch());
+    }
+
+    #endregion
+
+    #region Operations
+
+    [Fact]
+    public void MapTest()
+    {
+        var list0 = Nil;
+        var mappedList = Map(x => x * 2)(list0);
+        Assert.True(IsNil(mappedList).UnChurch());
+
+        var list1 = Cons(1)(list0);
+        mappedList = Map(x => x * 2)(list1);
+        Assert.Equal(2, (int)Head(mappedList));
+        Assert.True(IsNil(Tail(mappedList)).UnChurch());
+
+        var list2 = Cons(2)(list1);
+        mappedList = Map(x => x * 2)(list2);
+        Assert.Equal(4, (int)Head(mappedList));
+        Assert.Equal(2, (int)Head(Tail(mappedList)));
+        Assert.True(IsNil(Tail(Tail(mappedList))).UnChurch());
+
+        var list3 = Cons(3)(list2);
+        mappedList = Map(x => x * 2)(list3);
+        Assert.Equal(6, (int)Head(mappedList));
+        Assert.Equal(4, (int)Head(Tail(mappedList)));
+        Assert.Equal(2, (int)Head(Tail(Tail(mappedList))));
+        Assert.True(IsNil(Tail(Tail(Tail(mappedList)))).UnChurch());
+    }
+
+    [Fact]
+    public void FoldTest()
+    {
+        static Func<dynamic, dynamic> Add(dynamic a) => x => -a + x;
+
+        var list0 = Nil;
+        var result = Fold(Add)(100)(list0);
+        Assert.Equal(100, result);
+
+        var list1 = Cons(1)(list0);
+        result = Fold(Add)(100)(list1);
+        Assert.Equal(-100 + 1, result);
+
+        var list2 = Cons(2)(list1);
+        result = Fold(Add)(100)(list2);
+        Assert.Equal(-(-100 + 2) + 1, result);
+
+        var list3 = Cons(3)(list2);
+        result = Fold(Add)(100)(list3);
+        Assert.Equal(-(-(-100 + 3) + 2) + 1, result);
+    }
+
+    [Fact]
+    public void RFoldTest()
+    {
+        static Func<dynamic, dynamic> Add(dynamic a) => x => -a + x;
+
+        var list0 = Nil;
+        var result = RFold(Add)(100)(list0);
+        Assert.Equal(100, result);
+
+        var list1 = Cons(1)(list0);
+        result = RFold(Add)(100)(list1);
+        Assert.Equal(-100 + 1, result);
+
+        var list2 = Cons(2)(list1);
+        result = RFold(Add)(100)(list2);
+        Assert.Equal(-(-100 + 1) + 2, result);
+
+        var list3 = Cons(3)(list2);
+        result = RFold(Add)(100)(list3);
+        Assert.Equal(-(-(-100 + 1) + 2) + 3, result);
+    }
+
+    [Fact]
+    public void FilterTest()
+    {
+        static Boolean Test(dynamic x) => Church.ToChurch(x % 2 == 0);
+
+        var list0 = Nil;
+        var filteredList = Filter(Test)(list0);
+        Assert.True(IsNil(filteredList).UnChurch());
+
+        var list1 = Cons(1)(list0);
+        filteredList = Filter(Test)(list1);
+        Assert.True(IsNil(filteredList).UnChurch());
+
+        var list2 = Cons(2)(list1);
+        filteredList = Filter(Test)(list2);
+        Assert.Equal(2, (int)Head(filteredList));
+        Assert.True(IsNil(Tail(filteredList)).UnChurch());
+
+        var list3 = Cons(3)(list2);
+        filteredList = Filter(Test)(list3);
+        Assert.Equal(2, (int)Head(filteredList));
+        Assert.True(IsNil(Tail(filteredList)).UnChurch());
+
+        var list4 = Cons(4)(list3);
+        filteredList = Filter(Test)(list4);
+        Assert.Equal(4, (int)Head(filteredList));
+        Assert.Equal(2, (int)Head(Tail(filteredList)));
+        Assert.True(IsNil(Tail(Tail(filteredList))).UnChurch());
+    }
+
+    [Fact]
+    public void ReverseTest()
+    {
+        var list0 = Nil;
+        var reversedList = Reverse(list0);
+        Assert.True(IsNil(reversedList).UnChurch());
+
+        var list1 = Cons(1)(list0);
+        reversedList = Reverse(list1);
+        Assert.Equal(1, (int)Head(reversedList));
+        Assert.True(IsNil(Tail(reversedList)).UnChurch());
+
+        var list2 = Cons(2)(list1);
+        reversedList = Reverse(list2);
+        Assert.Equal(1, (int)Head(reversedList));
+        Assert.Equal(2, (int)Head(Tail(reversedList)));
+        Assert.True(IsNil(Tail(Tail(reversedList))).UnChurch());
+
+        var list3 = Cons(3)(list2);
+        reversedList = Reverse(list3);
+        Assert.Equal(1, (int)Head(reversedList));
+        Assert.Equal(2, (int)Head(Tail(reversedList)));
+        Assert.Equal(3, (int)Head(Tail(Tail(reversedList))));
+        Assert.True(IsNil(Tail(Tail(Tail(reversedList)))).UnChurch());
+    }
+
+    [Fact]
+    public void ConcatTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var list4 = Nil;
+        var list5 = Cons(4)(list4);
+        var list6 = Cons(5)(list5);
+        var list7 = Cons(6)(list6);
+        var concatenatedList = Concat(list3)(list7);
+
+        Assert.Equal(3, (int)Head(concatenatedList));
+        Assert.Equal(2, (int)Head(Tail(concatenatedList)));
+        Assert.Equal(1, (int)Head(Tail(Tail(concatenatedList))));
+        Assert.Equal(6, (int)Head(Tail(Tail(Tail(concatenatedList)))));
+        Assert.Equal(5, (int)Head(Tail(Tail(Tail(Tail(concatenatedList))))));
+        Assert.Equal(4, (int)Head(Tail(Tail(Tail(Tail(Tail(concatenatedList)))))));
+        Assert.True(IsNil(Tail(Tail(Tail(Tail(Tail(Tail(concatenatedList))))))).UnChurch());
+    }
+
+    [Fact]
+    public void AppendTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+
+        var appendedList = Append(list3)(4);
+        appendedList = Append(appendedList)(5);
+        appendedList = Append(appendedList)(6);
+
+        Assert.Equal(3, (int)Head(appendedList));
+        Assert.Equal(2, (int)Head(Tail(appendedList)));
+        Assert.Equal(1, (int)Head(Tail(Tail(appendedList))));
+        Assert.Equal(4, (int)Head(Tail(Tail(Tail(appendedList)))));
+        Assert.Equal(5, (int)Head(Tail(Tail(Tail(Tail(appendedList))))));
+        Assert.Equal(6, (int)Head(Tail(Tail(Tail(Tail(Tail(appendedList)))))));
+        Assert.True(IsNil(Tail(Tail(Tail(Tail(Tail(Tail(appendedList))))))).UnChurch());
+    }
+
+    [Fact]
+    public void SkipTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var skippedList = Skip(0u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(skippedList));
+        Assert.Equal(2, (int)Head(Tail(skippedList)));
+        Assert.Equal(1, (int)Head(Tail(Tail(skippedList))));
+        Assert.True(IsNil(Tail(Tail(Tail(skippedList)))).UnChurch());
+
+        skippedList = Skip(1u.ToChurch())(list3);
+        Assert.Equal(2, (int)Head(skippedList));
+        Assert.Equal(1, (int)Head(Tail(skippedList)));
+        Assert.True(IsNil(Tail(Tail(skippedList))).UnChurch());
+
+        skippedList = Skip(2u.ToChurch())(list3);
+        Assert.Equal(1, (int)Head(skippedList));
+        Assert.True(IsNil(Tail(skippedList)).UnChurch());
+
+        for(uint i = 3; i < 10; i++)
+        {
+            skippedList = Skip(i.ToChurch())(list3);
+            Assert.True(IsNil(skippedList).UnChurch());
+        }
+    }
+
+    [Fact]
+    public void TakeTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var takenList = Take(0u.ToChurch())(list3);
+        Assert.True(IsNil(takenList).UnChurch());
+
+        takenList = Take(1u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(takenList));
+        Assert.True(IsNil(Tail(takenList)).UnChurch());
+
+        takenList = Take(2u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(takenList));
+        Assert.Equal(2, (int)Head(Tail(takenList)));
+        Assert.True(IsNil(Tail(Tail(takenList))).UnChurch());
+
+        for (uint i = 3; i < 10; i++)
+        {
+            takenList = Take(3u.ToChurch())(list3);
+            Assert.Equal(3, (int)Head(takenList));
+            Assert.Equal(2, (int)Head(Tail(takenList)));
+            Assert.Equal(1, (int)Head(Tail(Tail(takenList))));
+            Assert.True(IsNil(Tail(Tail(Tail(takenList)))).UnChurch());
+        }
+    }
+
+    [Fact]
+    public void AtIndexTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var result = AtIndex(0u.ToChurch())(list3);
+        Assert.Equal(3, (int)result);
+
+        result = AtIndex(1u.ToChurch())(list3);
+        Assert.Equal(2, (int)result);
+
+        result = AtIndex(2u.ToChurch())(list3);
+        Assert.Equal(1, (int)result);
     }
 
     #endregion

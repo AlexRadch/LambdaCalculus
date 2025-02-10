@@ -9,7 +9,7 @@ class Program
         //var _ = BenchmarkRunner.Run<Bool_If_Bench>();
 
         GcdEval();
-        //var _ = BenchmarkRunner.Run<GcdBenchmarks>();
+        var _ = BenchmarkRunner.Run<GcdBenchmarks>();
 
         //NumEval();
     }
@@ -38,10 +38,11 @@ class Program
             var a = 252u;
             var b = 105u;
             var em = Math.GcdEuclideanMinus(a, b);
-            var ed = Math.GcdEuclideanMinus(a, b);
-            var cem = ChurchMath.GcdEuclideanMinus(a, b);
+            var ed = Math.GcdEuclideanDiv(a, b);
+            var cem1 = ChurchMath.GcdEuclideanMinusR1(a, b);
+            var cem2 = ChurchMath.GcdEuclideanMinusR2(a, b);
 
-            Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem}");
+            Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem1} {cem2}");
         }
 
         var random = new Random();
@@ -50,10 +51,11 @@ class Program
             var a = (uint)random.Next(100);
             var b = (uint)random.Next(100);
             var em = Math.GcdEuclideanMinus(a, b);
-            var ed = Math.GcdEuclideanMinus(a, b);
-            var cem = ChurchMath.GcdEuclideanMinus(a, b);
+            var ed = Math.GcdEuclideanDiv(a, b);
+            var cem1 = ChurchMath.GcdEuclideanMinusR1(a, b);
+            var cem2 = ChurchMath.GcdEuclideanMinusR2(a, b);
 
-            Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem}");
+            Console.WriteLine($"GDC({a}, {b}) = {em} {ed} {cem1} {cem2}");
         }
     }
 

@@ -18,13 +18,13 @@ public static partial class Church
 
     // True := λt.λf. t
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<F, T> TrueF<T, F>(T t) => f => t;
+    public static Func<F, dynamic> TrueF<T, F>(T t) => f => t!;
     public static readonly Boolean True = TrueF<dynamic, dynamic>;
     public static readonly Func<Boolean> LazyTrue = () => True;
 
     // False := λt.λf. f
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<F, F> FalseF<T, F>(T t) => f => f;
+    public static Func<F, dynamic> FalseF<T, F>(T t) => f => f!;
     public static readonly Boolean False = FalseF<dynamic, dynamic>;
     public static readonly Func<Boolean> LazyFalse = () => False;
 
@@ -83,6 +83,7 @@ public static partial class Church
     // If := λp.λt.λe. p t e := λp. p := Id
     public static Boolean If(Boolean p) => p;
     public static Func<Func<dynamic>, Func<Func<dynamic>, dynamic>> LazyIf(Boolean p) => @then => @else => p(@then)(@else)();
+    public static Func<Func<T>, Func<Func<T>, T>> LazyIf<T>(Boolean p) => @then => @else => p(@then)(@else)();
 
     //public static Func<Func<dynamic>, Func<Func<dynamic>, dynamic>> If(Func<Boolean> p) => LazyIf(p());
 
