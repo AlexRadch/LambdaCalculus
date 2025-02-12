@@ -37,8 +37,8 @@ public static partial class Church
     // Tail := Second
     public static ListNode Tail(ListNode l) => l(h => t => t);
 
-    // IsNil := λl. l (λh.λt.λd. False⁡) True
-    public static Boolean IsNil(ListNode p) => p(h => t => new Func<dynamic, Boolean>(z => False))(True);
+    // IsNil := λl. l (λh.λt.λ_. False⁡) True
+    public static Boolean IsNil(ListNode p) => p(h => t => new Func<dynamic, Boolean>(_ => False))(True);
 
     // Length := Fold (λa.λh. Succ a) Zero
     public static Numeral Length(ListNode l) => Fold(a => h => Succ(a))(Zero)(l);
@@ -47,35 +47,35 @@ public static partial class Church
 
     #region Operations
 
-    // Map := Z (λr.λf.λl. l (λh.λt.λd. Cons (f h) (r f t)) Nil)
+    // Map := Z (λr.λf.λl. l (λh.λt.λ_. Cons (f h) (r f t)) Nil)
     public static Func<Func<dynamic, dynamic>, Func<ListNode, ListNode>> Map =
         Combinators.Z<Func<dynamic, dynamic>, Func<ListNode, ListNode>>(r => f => l => l
-            (h => t => new Func<ListNode, ListNode>(z => 
+            (h => t => new Func<ListNode, ListNode>(_ => 
                 Cons(f(h))(r(f)(t))
             ))
             (Nil));
 
-    // Fold := Z (λr.λf.λa.λl. l (λh.λt.λd. r f (f a h) t) a)
+    // Fold := Z (λr.λf.λa.λl. l (λh.λt.λ_. r f (f a h) t) a)
     public static Func<Func<dynamic, Func<dynamic, dynamic>>, Func<dynamic, Func<ListNode, dynamic>>> Fold =
         Combinators.Z<Func<dynamic, Func<dynamic, dynamic>>, Func<dynamic, Func<ListNode, dynamic>>>(r => f => a => l => l
-            (h => t => new Func<dynamic, dynamic>(z =>
+            (h => t => new Func<dynamic, dynamic>(_ =>
                 r(f)(f(a)(h))(t)
             ))
             (a));
 
-    // RFold := Z (λr.λf.λa.λl. l (λh.λt.λd. (f (r f a t) h)) a)
+    // RFold := Z (λr.λf.λa.λl. l (λh.λt.λ_. (f (r f a t) h)) a)
     public static Func<Func<dynamic, Func<dynamic, dynamic>>, Func<dynamic, Func<ListNode, dynamic>>> RFold =
         Combinators.Z<Func<dynamic, Func<dynamic, dynamic>>, Func<dynamic, Func<ListNode, dynamic>>>(r => f => a => l => l
-            (h => t => new Func<dynamic, dynamic>(z =>
+            (h => t => new Func<dynamic, dynamic>(_ =>
                 f(r(f)(a)(t))(h)
             ))
             (a));
 
 
-    // Filter := Z (λr.λf.λl. l (λh.λt.λz. f h (Cons h (r f t)) (r f t)) Nil)
+    // Filter := Z (λr.λf.λl. l (λh.λt.λ_. f h (Cons h (r f t)) (r f t)) Nil)
     public static Func<Func<dynamic, Boolean>, Func<ListNode, ListNode>> Filter =
         Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, ListNode>>(r => f => l => l
-            (h => t => new Func<ListNode, ListNode>(z =>
+            (h => t => new Func<ListNode, ListNode>(_ =>
                 f(h)(Cons(h)(r(f)(t)))(r(f)(t))
             ))
             (Nil));
@@ -96,20 +96,20 @@ public static partial class Church
     //        (new Func<dynamic>(() => Tail(t)))
     //    )(l);
 
-    // Skip := Z (λr.λn.λl. l (λh.λt.λz. IsZero n l (r (Pred n) t)) Nil)
+    // Skip := Z (λr.λn.λl. l (λh.λt.λ_. IsZero n l (r (Pred n) t)) Nil)
     public static Func<Numeral, Func<ListNode, ListNode>> Skip =
         Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
-            (h => t => new Func<ListNode, ListNode>(z =>
+            (h => t => new Func<ListNode, ListNode>(_ =>
                 LazyIf(IsZero(n))
                     (() => l)
                     (() => r(Pred(n))(t))
             ))
             (Nil));
 
-    // Take := Z (λr.λn.λl. l (λh.λt.λz. IsZero n Nil (Cons h (r (Pred n) t))) Nil)
+    // Take := Z (λr.λn.λl. l (λh.λt.λ_. IsZero n Nil (Cons h (r (Pred n) t))) Nil)
     public static Func<Numeral, Func<ListNode, ListNode>> Take =
         Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
-            (h => t => new Func<ListNode, ListNode>(z =>
+            (h => t => new Func<ListNode, ListNode>(_ =>
                 LazyIf(IsZero(n))
                     (() => Nil)
                     (() => Cons(h)(r(Pred(n))(t))
@@ -117,20 +117,20 @@ public static partial class Church
             ))
             (Nil));
 
-    // All := Z (λr.λf.λl. l (λh.λt.λz. f h (r f t) (False) True)
+    // All := Z (λr.λf.λl. l (λh.λt.λ_. f h (r f t) (False) True)
     public static Func<Func<dynamic, Boolean>, Func<ListNode, Boolean>> All =
         Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, Boolean>>(r => f => l => l
-            (h => t => new Func<Boolean, Boolean>(z =>
+            (h => t => new Func<Boolean, Boolean>(_ =>
                 LazyIf(f(h))
                     (new Func<Boolean>(() => r(f)(t)))
                     (LazyFalse)
             ))
             (True));
 
-    // Any := Z (λr.λf.λl. l (λh.λt.λz. f h (True) (r f t) False)
+    // Any := Z (λr.λf.λl. l (λh.λt.λ_. f h (True) (r f t) False)
     public static Func<Func<dynamic, Boolean>, Func<ListNode, Boolean>> Any =
         Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, Boolean>>(r => f => l => l
-            (h => t => new Func<Boolean, Boolean>(z =>
+            (h => t => new Func<Boolean, Boolean>(_ =>
                 LazyIf(f(h))
                     (LazyTrue)
                     (new Func<Boolean>(() => r(f)(t)))
@@ -140,11 +140,11 @@ public static partial class Church
     // AtIndex := λn.λl. Head (Skip n l)
     public static Func<ListNode, dynamic> AtIndex(Numeral n) => l => Head(Skip(n)(l));
 
-    // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt.λz. f h (Cons n Nil) (r (Succ n) t)) Nil)) Zero
+    // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt.λ_. f h (Cons n Nil) (r (Succ n) t)) Nil)) Zero
     public static Func<ListNode, ListNode> IndexOf(Func<dynamic, Boolean> f) =>
         Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
-            (h => t => new Func<ListNode, ListNode>(z =>
-                LazyIf(f(h))
+            (h => t => new Func<ListNode, ListNode>(_ =>
+                LazyIf<ListNode>(f(h))
                     (new Func<ListNode>(() => Cons(n)(Nil)))
                     (new Func<ListNode>(() => r(Succ(n))(t)))
             ))
@@ -152,16 +152,31 @@ public static partial class Church
         )
         (Zero);
 
-    // LastIndexOf := RFold (λa.λh. a (λn.λt.λz. Cons (Succ n) Nil) (f h (Cons Zero Nil) Nil)) Nil
-    public static Func<ListNode, ListNode> LastIndexOf(Func<dynamic, dynamic> f) => l =>
-        RFold(a => h => ((ListNode)a)
-            (n => t => new Func<ListNode, ListNode>(z =>
-                Cons(Succ(n))(Nil)
+    //// LastIndexOf := RFold (λa.λh. a (λn.λt.λ_. Cons (Succ n) Nil) (f h (Cons Zero Nil) Nil)) Nil
+    //public static Func<ListNode, ListNode> LastIndexOf(Func<dynamic, dynamic> f) => l =>
+    //    RFold(a => h => ((ListNode)a)
+    //        (n => t => new Func<ListNode, ListNode>(_ =>
+    //            Cons(Succ(n))(Nil)
+    //        ))
+    //        (LazyIf<ListNode>(f(h))
+    //            (new Func<ListNode>(() => Cons(Zero)(Nil)))
+    //            (new Func<ListNode>(() => Nil)))
+    //    )(Nil)(l);
+
+    // LastIndexOf := λf. (Z (λr.λn.λl. l (λh.λt.λ_. (λi IsNil i (f(h) (Cons n Nil) Nil) i) (r (Succ n) t)) Nil)) Zero
+    public static Func<ListNode, ListNode> LastIndexOf(Func<dynamic, dynamic> f) =>
+        Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
+            (h => t => new Func<ListNode, ListNode>(_ =>
+                new Func<ListNode, ListNode>(i =>
+                    LazyIf(IsNil(i))
+                        (() => f(h)(Cons(n)(Nil))(Nil))
+                        (() => i)
+                )
+                (r(Succ(n))(t))
             ))
-            (LazyIf(f(h))
-                (new Func<ListNode>(() => Cons(Zero)(Nil)))
-                (new Func<ListNode>(() => Nil)))
-        )(Nil)(l);
+            (Nil)
+        )
+        (Zero);
 
     #endregion
 
