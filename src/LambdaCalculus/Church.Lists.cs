@@ -72,7 +72,7 @@ public static partial class Church
             (a));
 
 
-    // Filter := Z (λr.λf.λl. l (λh.λt.λd. f h (Cons h (r f t)) (r f t)) Nil)
+    // Filter := Z (λr.λf.λl. l (λh.λt.λz. f h (Cons h (r f t)) (r f t)) Nil)
     public static Func<Func<dynamic, Boolean>, Func<ListNode, ListNode>> Filter =
         Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, ListNode>>(r => f => l => l
             (h => t => new Func<ListNode, ListNode>(z =>
@@ -117,10 +117,51 @@ public static partial class Church
             ))
             (Nil));
 
+    // All := Z (λr.λf.λl. l (λh.λt.λz. f h (r f t) (False) True)
+    public static Func<Func<dynamic, Boolean>, Func<ListNode, Boolean>> All =
+        Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, Boolean>>(r => f => l => l
+            (h => t => new Func<Boolean, Boolean>(z =>
+                LazyIf(f(h))
+                    (new Func<Boolean>(() => r(f)(t)))
+                    (LazyFalse)
+            ))
+            (True));
+
+    // Any := Z (λr.λf.λl. l (λh.λt.λz. f h (True) (r f t) False)
+    public static Func<Func<dynamic, Boolean>, Func<ListNode, Boolean>> Any =
+        Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, Boolean>>(r => f => l => l
+            (h => t => new Func<Boolean, Boolean>(z =>
+                LazyIf(f(h))
+                    (LazyTrue)
+                    (new Func<Boolean>(() => r(f)(t)))
+            ))
+            (False));
+
     // AtIndex := λn.λl. Head (Skip n l)
     public static Func<ListNode, dynamic> AtIndex(Numeral n) => l => Head(Skip(n)(l));
 
-    // IndexOf := Z (λr.λn.λf.λl. l (λh.λt.λz. f(h) n (r (Succ n) t)) Zero) Zero f l
+    // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt.λz. f h (Cons n Nil) (r (Succ n) t)) Nil)) Zero
+    public static Func<ListNode, ListNode> IndexOf(Func<dynamic, Boolean> f) =>
+        Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
+            (h => t => new Func<ListNode, ListNode>(z =>
+                LazyIf(f(h))
+                    (new Func<ListNode>(() => Cons(n)(Nil)))
+                    (new Func<ListNode>(() => r(Succ(n))(t)))
+            ))
+            (Nil)
+        )
+        (Zero);
+
+    // LastIndexOf := RFold (λa.λh. a (λn.λt.λz. Cons (Succ n) Nil) (f h (Cons Zero Nil) Nil)) Nil
+    public static Func<ListNode, ListNode> LastIndexOf(Func<dynamic, dynamic> f) => l =>
+        RFold(a => h => ((ListNode)a)
+            (n => t => new Func<ListNode, ListNode>(z =>
+                Cons(Succ(n))(Nil)
+            ))
+            (LazyIf(f(h))
+                (new Func<ListNode>(() => Cons(Zero)(Nil)))
+                (new Func<ListNode>(() => Nil)))
+        )(Nil)(l);
 
     #endregion
 
