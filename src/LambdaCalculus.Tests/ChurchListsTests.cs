@@ -353,6 +353,67 @@ public class ChurchListsTests
     }
 
     [Fact]
+    public void SkipLastTest()
+    {
+        var list0 = Nil;
+
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var skippedList = SkipLast(0u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(skippedList));
+        Assert.Equal(2, (int)Head(Tail(skippedList)));
+        Assert.Equal(1, (int)Head(Tail(Tail(skippedList))));
+        Assert.True(IsNil(Tail(Tail(Tail(skippedList)))).UnChurch());
+
+        skippedList = SkipLast(1u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(skippedList));
+        Assert.Equal(2, (int)Head(Tail(skippedList)));
+        Assert.True(IsNil(Tail(Tail(skippedList))).UnChurch());
+
+        skippedList = SkipLast(2u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(skippedList));
+        Assert.True(IsNil(Tail(skippedList)).UnChurch());
+
+        for (uint i = 3; i < 10; i++)
+        {
+            skippedList = SkipLast(i.ToChurch())(list3);
+            Assert.True(IsNil(skippedList).UnChurch());
+        }
+    }
+
+    [Fact]
+    public void TakeLastTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var takenList = TakeLast(0u.ToChurch())(list3);
+        Assert.True(IsNil(takenList).UnChurch());
+
+        takenList = TakeLast(1u.ToChurch())(list3);
+        Assert.Equal(1, (int)Head(takenList));
+        Assert.True(IsNil(Tail(takenList)).UnChurch());
+
+        takenList = TakeLast(2u.ToChurch())(list3);
+        Assert.Equal(2, (int)Head(takenList));
+        Assert.Equal(1, (int)Head(Tail(takenList)));
+        Assert.True(IsNil(Tail(Tail(takenList))).UnChurch());
+
+        for (uint i = 3; i < 10; i++)
+        {
+            takenList = TakeLast(3u.ToChurch())(list3);
+            Assert.Equal(3, (int)Head(takenList));
+            Assert.Equal(2, (int)Head(Tail(takenList)));
+            Assert.Equal(1, (int)Head(Tail(Tail(takenList))));
+            Assert.True(IsNil(Tail(Tail(Tail(takenList)))).UnChurch());
+        }
+    }
+
+    [Fact]
     public void AllTest()
     {
         static Boolean Test(dynamic x) => Church.ToChurch(x % 2 == 0);

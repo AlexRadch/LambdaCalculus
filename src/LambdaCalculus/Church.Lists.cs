@@ -117,6 +117,48 @@ public static partial class Church
             ))
             (Nil));
 
+    // SkipLast := λn.λl1. Second(
+    //     Z (λr.λl. l
+    //         (λh.λt.λ_. r(t)
+    //             (λn2.λt2. IsZero(n2) (Pair Zero (Cons h t2)) (Pair (Pred n2) Nil))
+    //         (Pair n Nil)
+    //     )
+    //     (l1)
+    // )
+    public static Func<ListNode, ListNode> SkipLast(Numeral n) => l1 =>
+        Second(Combinators.Z<ListNode, CPair<Numeral, ListNode>>(r => l => l(h => t => 
+            new Func<CPair<Numeral, ListNode>, CPair<Numeral, ListNode>>(_ =>
+                r(t)(n2 => t2 =>
+                    LazyIf(IsZero(n2))
+                        (() => Pair<Numeral, ListNode>(Zero)(Cons(h)(t2)))
+                        (() => Pair<Numeral, ListNode>(Pred(n2))(Nil))
+                )
+            ))
+            (Pair<Numeral, ListNode>(n)(Nil))
+        )
+        (l1));
+
+    // TakeLast := λn.λl1. Second(
+    //     Z (λr.λl. l
+    //         (λh.λt.λ_. r(t)
+    //             (λn2.λt2. IsZero(n2) (Pair Zero t2) (Pair (Pred n2) (Cons h t2)))
+    //         (Pair n Nil)
+    //     )
+    //     (l1)
+    // )
+    public static Func<ListNode, ListNode> TakeLast(Numeral n) => l1 =>
+        Second(Combinators.Z<ListNode, CPair<Numeral, ListNode>>(r => l => l(h => t =>
+            new Func<CPair<Numeral, ListNode>, CPair<Numeral, ListNode>>(_ =>
+                r(t)(n2 => t2 =>
+                    LazyIf(IsZero(n2))
+                        (() => Pair<Numeral, ListNode>(Zero)(t2))
+                        (() => Pair<Numeral, ListNode>(Pred(n2))(Cons(h)(t2)))
+                )
+            ))
+            (Pair<Numeral, ListNode>(n)(Nil))
+        )
+        (l1));
+
     // All := Z (λr.λf.λl. l (λh.λt.λ_. f h (r f t) (False) True)
     public static Func<Func<dynamic, Boolean>, Func<ListNode, Boolean>> All =
         Combinators.Z<Func<dynamic, Boolean>, Func<ListNode, Boolean>>(r => f => l => l
