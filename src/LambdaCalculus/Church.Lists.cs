@@ -106,17 +106,6 @@ public static partial class Church
             ))
             (Nil));
 
-    // Take := Z (λr.λn.λl. l (λh.λt.λ_. IsZero n Nil (Cons h (r (Pred n) t))) Nil)
-    public static Func<Numeral, Func<ListNode, ListNode>> Take =
-        Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
-            (h => t => new Func<ListNode, ListNode>(_ =>
-                LazyIf(IsZero(n))
-                    (() => Nil)
-                    (() => Cons(h)(r(Pred(n))(t))
-                )
-            ))
-            (Nil));
-
     // SkipLast := λn.λl1. Second(
     //     Z (λr.λl. l
     //         (λh.λt.λ_. r(t)
@@ -126,7 +115,7 @@ public static partial class Church
     //     (l1)
     // )
     public static Func<ListNode, ListNode> SkipLast(Numeral n) => l1 =>
-        Second(Combinators.Z<ListNode, CPair<Numeral, ListNode>>(r => l => l(h => t => 
+        Second(Combinators.Z<ListNode, CPair<Numeral, ListNode>>(r => l => l(h => t =>
             new Func<CPair<Numeral, ListNode>, CPair<Numeral, ListNode>>(_ =>
                 r(t)(n2 => t2 =>
                     LazyIf(IsZero(n2))
@@ -137,6 +126,17 @@ public static partial class Church
             (Pair<Numeral, ListNode>(n)(Nil))
         )
         (l1));
+
+    // Take := Z (λr.λn.λl. l (λh.λt.λ_. IsZero n Nil (Cons h (r (Pred n) t))) Nil)
+    public static Func<Numeral, Func<ListNode, ListNode>> Take =
+        Combinators.Z<Numeral, Func<ListNode, ListNode>>(r => n => l => l
+            (h => t => new Func<ListNode, ListNode>(_ =>
+                LazyIf(IsZero(n))
+                    (() => Nil)
+                    (() => Cons(h)(r(Pred(n))(t))
+                )
+            ))
+            (Nil));
 
     // TakeLast := λn.λl1. Second(
     //     Z (λr.λl. l
@@ -179,8 +179,8 @@ public static partial class Church
             ))
             (False));
 
-    // AtIndex := λn.λl. Head (Skip n l)
-    public static Func<ListNode, dynamic> AtIndex(Numeral n) => l => Head(Skip(n)(l));
+    // ElementAt := λn.λl. Head (Skip n l)
+    public static Func<ListNode, dynamic> ElementAt(Numeral n) => l => Head(Skip(n)(l));
 
     // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt.λ_. f h (Cons n Nil) (r (Succ n) t)) Nil)) Zero
     public static Func<ListNode, ListNode> IndexOf(Func<dynamic, Boolean> f) =>
@@ -219,6 +219,23 @@ public static partial class Church
             (Nil)
         )
         (Zero);
+
+    // Range := λf.λz. (Z (λr.λs.λn. IsZero n Nil (Cons (s f z) (r (Succ s) (Pred n))))) Zero
+    public static Func<dynamic, Func<Numeral, ListNode>> Range(NextNumeral f) => z =>
+        Combinators.Z<Numeral, Func<Numeral, ListNode>>(r => s => n =>
+            LazyIf(IsZero(n))
+                (() => Nil)
+                (() => Cons(s(f)(z))(r(Succ(s))(Pred(n))))
+        )
+        (Zero);
+
+    // Repeat := λv. (Z (λr.λn. IsZero n Nil (Cons v (r (Pred n))))
+    public static Func<Numeral, ListNode> Repeat(dynamic v) =>
+        Combinators.Z<Numeral, ListNode>(r => n =>
+            LazyIf(IsZero(n))
+                (() => Nil)
+                (() => Cons(v)(r(Pred(n))))
+        );
 
     #endregion
 

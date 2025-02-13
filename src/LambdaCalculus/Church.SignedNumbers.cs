@@ -35,6 +35,14 @@ public static partial class Church
 
     #endregion
 
+    #region Constants
+
+    public static readonly Signed ZeroS = NumeralToSigned(ZeroF);
+
+    public static readonly Signed OneS = NumeralToSigned(OneF);
+
+    #endregion
+
     #region Arithmetic
 
     // NegS = λx. pair⁡ (second⁡ x) (first⁡ x)
@@ -43,13 +51,20 @@ public static partial class Church
     // AbsS = λx. x (λpx.λnx. CreatePair (Diff(px)(nx)) (Zero))
     public static Signed AbsS(Signed x) => b => x(px => nx => Pair<Numeral, Numeral>(Diff(px)(nx))(Zero)(b));
 
-    // PlusS = λx.λy. OneZero⁡(pair⁡ (plus⁡ (first⁡ x) (first⁡ y)) (plus⁡ (second⁡ x) (second⁡ y)))
+    // PlusS = λx.λy. x (λpx.λnx. y (λpy.λny. CreateSigned⁡ (Plus⁡ px py) (Plus⁡ nx ny)))
     public static Func<Signed, Signed> PlusS(Signed x) => y => x(px => nx => y(py => ny => 
         CreateSigned(Plus(px)(py))(Plus(nx)(ny))));
 
-    // MinusS = λx.λy.OneZero⁡ (pair⁡ (plus⁡ (first⁡ x) (second⁡ y)) (plus⁡ (second⁡ x) (first⁡ y)))
+    // SuccS = λx. x (λpx.λnx. CreateSigned⁡ (Succ px) nx)
+    public static Signed SuccS(Signed x) => x(px => nx => CreateSigned(Succ(px))(nx));
+
+    // MinusS = λx.λy. x (λpx.λnx. y (λpy.λny. CreateSigned⁡ (Plus⁡ px ny) (Plus⁡ nx py)))
     public static Func<Signed, Signed> MinusS(Signed x) => y => x(px => nx => y(py => ny => 
         CreateSigned(Plus(px)(ny))(Plus(nx)(py))));
+
+    // PredS = λx. x (λpx.λnx. CreateSigned⁡ px (Succ nx))
+    public static Signed PredS(Signed x) => x(px => nx => CreateSigned(px)(Succ(nx)));
+
 
     // MultS = λx.λy.pair⁡ (plus⁡ (mult⁡ (first⁡ x) (first⁡ y)) (mult⁡ (second⁡ x) (second⁡ y)))
     // (plus⁡ (mult⁡ (first⁡ x) (second⁡ y)) (mult⁡ (second⁡ x) (first⁡ y)))
@@ -81,8 +96,8 @@ public static partial class Church
     ////     (y (λpy.λny. (py - ny) (λr. MultS r x) (OneS)))
     //public static Func<Signed, Signed> ExpS(Signed x) => y => 
     //    LazyIf(IsNegS(y))
-    //        (() => y(py => ny => DivideS(NumeralToSigned(One))(Minus(ny)(py)(r => MultS(r)(x))(NumeralToSigned(One)))))
-    //        (() => y(py => ny => Minus(py)(ny)(r => MultS(r)(x))(NumeralToSigned(One))));
+    //        (() => y(py => ny => DivideS(OneS)(Minus(ny)(py)(r => MultS(r)(x))(OneS))))
+    //        (() => y(py => ny => Minus(py)(ny)(r => MultS(r)(x))(OneS)));
 
     // ExpS := λx.λy IsNegS y (λpy.λny.
     //     (λd IsZero d
@@ -92,8 +107,8 @@ public static partial class Church
     //     (py - ny) )
     public static Func<Signed, Signed> ExpS(Signed x) => y => y(py => ny =>
         new Func<Numeral, Signed>(d => LazyIf(IsZero⁡(d))
-            (() => DivideS(NumeralToSigned(One))(Minus(ny)(py)(r => MultS(r)(x))(NumeralToSigned(One))))
-            (() => d(r => MultS(r)(x))(NumeralToSigned(One)))
+            (() => DivideS(OneS)(Minus(ny)(py)(r => MultS(r)(x))(OneS)))
+            (() => d(r => MultS(r)(x))(OneS))
         )
         (Minus(py)(ny)));
 

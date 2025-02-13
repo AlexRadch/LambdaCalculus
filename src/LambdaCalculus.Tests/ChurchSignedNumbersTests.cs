@@ -90,6 +90,22 @@ public class ChurchSignedNumbersTests
 
     #endregion
 
+    #region Constants
+
+    [Fact]
+    public void ZeroSTest()
+    {
+        Assert.Equal(0, ZeroS.UnChurch());
+    }
+
+    [Fact]
+    public void OneSTest()
+    {
+        Assert.Equal(1, OneS.UnChurch());
+    }
+
+    #endregion
+
     #region Arithmetic
 
     [Theory]
@@ -118,12 +134,30 @@ public class ChurchSignedNumbersTests
     }
 
     [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void SuccSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x + 1, SuccS(cx).UnChurch());
+        Assert.Equal(x + 2, SuccS(SuccS(cx)).UnChurch());
+    }
+
+    [Theory]
     [MemberData(nameof(GetIntsData2))]
     public void MinusSTest(int x, int y)
     {
         var cx = x.ToChurch();
         var cy = y.ToChurch();
         Assert.Equal(x - y, MinusS(cx)(cy).UnChurch());
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void PredSTest(int x)
+    {
+        var cx = x.ToChurch();
+        Assert.Equal(x - 1, PredS(cx).UnChurch());
+        Assert.Equal(x - 2, PredS(PredS(cx)).UnChurch());
     }
 
     [Theory]

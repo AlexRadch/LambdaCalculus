@@ -323,36 +323,6 @@ public class ChurchListsTests
     }
 
     [Fact]
-    public void TakeTest()
-    {
-        var list0 = Nil;
-        var list1 = Cons(1)(list0);
-        var list2 = Cons(2)(list1);
-        var list3 = Cons(3)(list2);
-
-        var takenList = Take(0u.ToChurch())(list3);
-        Assert.True(IsNil(takenList).UnChurch());
-
-        takenList = Take(1u.ToChurch())(list3);
-        Assert.Equal(3, (int)Head(takenList));
-        Assert.True(IsNil(Tail(takenList)).UnChurch());
-
-        takenList = Take(2u.ToChurch())(list3);
-        Assert.Equal(3, (int)Head(takenList));
-        Assert.Equal(2, (int)Head(Tail(takenList)));
-        Assert.True(IsNil(Tail(Tail(takenList))).UnChurch());
-
-        for (uint i = 3; i < 10; i++)
-        {
-            takenList = Take(3u.ToChurch())(list3);
-            Assert.Equal(3, (int)Head(takenList));
-            Assert.Equal(2, (int)Head(Tail(takenList)));
-            Assert.Equal(1, (int)Head(Tail(Tail(takenList))));
-            Assert.True(IsNil(Tail(Tail(Tail(takenList)))).UnChurch());
-        }
-    }
-
-    [Fact]
     public void SkipLastTest()
     {
         var list0 = Nil;
@@ -380,6 +350,36 @@ public class ChurchListsTests
         {
             skippedList = SkipLast(i.ToChurch())(list3);
             Assert.True(IsNil(skippedList).UnChurch());
+        }
+    }
+
+    [Fact]
+    public void TakeTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        var takenList = Take(0u.ToChurch())(list3);
+        Assert.True(IsNil(takenList).UnChurch());
+
+        takenList = Take(1u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(takenList));
+        Assert.True(IsNil(Tail(takenList)).UnChurch());
+
+        takenList = Take(2u.ToChurch())(list3);
+        Assert.Equal(3, (int)Head(takenList));
+        Assert.Equal(2, (int)Head(Tail(takenList)));
+        Assert.True(IsNil(Tail(Tail(takenList))).UnChurch());
+
+        for (uint i = 3; i < 10; i++)
+        {
+            takenList = Take(3u.ToChurch())(list3);
+            Assert.Equal(3, (int)Head(takenList));
+            Assert.Equal(2, (int)Head(Tail(takenList)));
+            Assert.Equal(1, (int)Head(Tail(Tail(takenList))));
+            Assert.True(IsNil(Tail(Tail(Tail(takenList)))).UnChurch());
         }
     }
 
@@ -547,20 +547,20 @@ public class ChurchListsTests
     }
 
     [Fact]
-    public void AtIndexTest()
+    public void ElementAtTest()
     {
         var list0 = Nil;
         var list1 = Cons(1)(list0);
         var list2 = Cons(2)(list1);
         var list3 = Cons(3)(list2);
 
-        var result = AtIndex(0u.ToChurch())(list3);
+        var result = ElementAt(0u.ToChurch())(list3);
         Assert.Equal(3, (int)result);
 
-        result = AtIndex(1u.ToChurch())(list3);
+        result = ElementAt(1u.ToChurch())(list3);
         Assert.Equal(2, (int)result);
 
-        result = AtIndex(2u.ToChurch())(list3);
+        result = ElementAt(2u.ToChurch())(list3);
         Assert.Equal(1, (int)result);
     }
 
@@ -660,6 +660,46 @@ public class ChurchListsTests
             result = LastIndexOf(Test)(list3);
             Assert.True(IsNil(result).UnChurch());
         }
+    }
+
+    [Fact]
+    public void RangeTest()
+    {
+        var range = Range(x => Succ(x))(One)(Zero);
+        Assert.True(IsNil(range).UnChurch());
+
+        range = Range(x => Succ(x))(One)(2u.ToChurch());
+        Assert.Equal(1u, ((Numeral)Head(range)).UnChurch());
+        Assert.Equal(2u, ((Numeral)Head(Tail(range))).UnChurch());
+        Assert.True(IsNil(Tail(Tail(range))).UnChurch());
+
+        range = Range(x => SuccS(x))((-1).ToChurch())(3u.ToChurch());
+        Assert.Equal(-1, ((Signed)Head(range)).UnChurch());
+        Assert.Equal(0, ((Signed)Head(Tail(range))).UnChurch());
+        Assert.Equal(1, ((Signed)Head(Tail(Tail(range)))).UnChurch());
+        Assert.True(IsNil(Tail(Tail(Tail(range)))).UnChurch());
+    }
+
+    [Fact]
+    public void RepeatTest()
+    {
+        var repeated = Repeat(0)(0U.ToChurch());
+        Assert.True(IsNil(repeated).UnChurch());
+
+        repeated = Repeat(2)(1U.ToChurch());
+        Assert.Equal(2, (int)Head(repeated));
+        Assert.True(IsNil(Tail(repeated)).UnChurch());
+
+        repeated = Repeat(5)(2U.ToChurch());
+        Assert.Equal(5, (int)Head(repeated));
+        Assert.Equal(5, (int)Head(Tail(repeated)));
+        Assert.True(IsNil(Tail(Tail(repeated))).UnChurch());
+
+        repeated = Repeat(6)(3U.ToChurch());
+        Assert.Equal(6, (int)Head(repeated));
+        Assert.Equal(6, (int)Head(Tail(repeated)));
+        Assert.Equal(6, (int)Head(Tail(Tail(repeated))));
+        Assert.True(IsNil(Tail(Tail(Tail(repeated)))).UnChurch());
     }
 
     #endregion
