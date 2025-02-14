@@ -7,12 +7,12 @@ public static partial class Church
 {
     #region Delegates
 
-    // NextNumeral := λn. next n
-    public delegate dynamic NextNumeral(dynamic Numeral);
+    // NextValue := λn. next n
+    public delegate dynamic NextValue(dynamic Numeral);
 
     // Numeral := λf.λz. n times f from z // 0 f z := z, 1 f z := f z, 2 f z := f (f z), n f z := f (f .. (f z)..)
     [DebuggerDisplay("{LambdaCalculus.Church.UnChurch(this)}")]
-    public delegate NextNumeral Numeral(NextNumeral next);
+    public delegate NextValue Numeral(NextValue next);
 
     #endregion
 
@@ -20,23 +20,23 @@ public static partial class Church
 
     // Zero := λf.λz. z := False
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static NextNumeral ZeroF(NextNumeral f) => z => z;
+    public static NextValue ZeroF(NextValue f) => z => z;
     public static readonly Numeral Zero = ZeroF;
     public static readonly Func<Numeral> LazyZero = () => ZeroF;
 
     // Zero := False
     [EditorBrowsable(EditorBrowsableState.Never)]
     //public static NextNumeral ZeroF_False(NextNumeral f) => FalseF<NextNumeral, dynamic>(f);
-    public static NextNumeral ZeroF_False(NextNumeral f) => z => FalseF<NextNumeral, dynamic>(f)(z);
+    public static NextValue ZeroF_False(NextValue f) => z => FalseF<NextValue, dynamic>(f)(z);
     [EditorBrowsable(EditorBrowsableState.Never)]
     //public static readonly Numeral Zero_False = False;
     //public static readonly Numeral Zero_False = f => z => False(f)(z);
-    public static readonly Numeral Zero_False = f => z => FalseF<NextNumeral, dynamic>(f)(z);
+    public static readonly Numeral Zero_False = f => z => FalseF<NextValue, dynamic>(f)(z);
     //public static readonly Numeral Zero_False = ZeroF_False;
 
     // One := λf.λz. f z := λf f := Id
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static NextNumeral OneF(NextNumeral f) => f;
+    public static NextValue OneF(NextValue f) => f;
     public static readonly Numeral One = OneF;
     public static readonly Func<Numeral> LazyOne = () => OneF;
 
@@ -75,7 +75,7 @@ public static partial class Church
 
     // Pred := λn.λf.λz. n (λg.λh. h (g f)) (λ_. z) (λu. u)
     //public static Num Pred(Num n) => f => z => n(g => h => h(g(f)))(_ => z)(9641u => u);
-    public static Numeral Pred(Numeral n) => f => z => n(g => (NextNumeral)(h => h(g(f))))((NextNumeral)(_ => z))((NextNumeral)(u => u));
+    public static Numeral Pred(Numeral n) => f => z => n(g => (NextValue)(h => h(g(f))))((NextValue)(_ => z))((NextValue)(u => u));
 
     // Minus := λm.λn. n Pred m
     [EditorBrowsable(EditorBrowsableState.Never)]

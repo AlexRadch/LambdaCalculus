@@ -43,8 +43,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData))]
     public void ToChurchTest(bool b)
     {
-        foreach(var @true in GetDynamics())
-            foreach (var @false in GetDynamics())
+        foreach(var @true in CombinatorsSKITests.GetDynamics())
+            foreach (var @false in CombinatorsSKITests.GetDynamics())
             {
                 var expected = b ? @true : @false;
                 Assert.Equal(expected, b.ToChurch()(@true)(@false));
@@ -187,8 +187,8 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetBoolsData))]
     public void IfTest(bool b)
     {
-        foreach (var @then in GetDynamics())
-            foreach (var @else in GetDynamics())
+        foreach (var @then in CombinatorsSKITests.GetDynamics())
+            foreach (var @else in CombinatorsSKITests.GetDynamics())
             {
                 var expected = b ? @then : @else;
                 var @bool = b.ToChurch();
@@ -213,8 +213,8 @@ public class ChurchBooleansTests
     {
         var random = new Random(seed);
 
-        var bItems = new List<bool>(len);
-        var cItems = new List<Boolean>(len);
+        var bItems = new System.Collections.Generic.List<bool>(len);
+        var cItems = new System.Collections.Generic.List<Boolean>(len);
 
         while (bItems.Count < len)
         {
@@ -249,7 +249,7 @@ public class ChurchBooleansTests
         Assert.Equal(bItems[0], cItems[0].UnChurch());
     }
 
-    private static bool EvaluateOp(List<bool> items, BoolOp op, int opIndex) => op switch
+    private static bool EvaluateOp(System.Collections.Generic.List<bool> items, BoolOp op, int opIndex) => op switch
     {
         BoolOp.Not => !items[opIndex],
         BoolOp.Or => items[opIndex] || items[opIndex + 1],
@@ -262,7 +262,7 @@ public class ChurchBooleansTests
         _ => throw new NotImplementedException(),
     };
 
-    private static Boolean EvaluateOp(List<Boolean> items, BoolOp op, int opIndex) => op switch
+    private static Boolean EvaluateOp(System.Collections.Generic.List<Boolean> items, BoolOp op, int opIndex) => op switch
     {
         BoolOp.Not => Not(items[opIndex]),
         BoolOp.Or => Or(items[opIndex])(items[opIndex + 1]),
@@ -309,24 +309,11 @@ public class ChurchBooleansTests
         from b in GetBools()
         select new object[] { a, b };
 
-    public static IEnumerable<dynamic> GetDynamics()
-    {
-        foreach (var a in GetBools())
-        {
-            yield return a;
-            yield return Convert.ToInt32(a);
-            yield return Convert.ToString(a);
-        }
-        yield return new NotImplementedException();
-        yield return (Action)(static () => throw new NotImplementedException());
-    }
-
-    public static IEnumerable<object[]> GetDynamicsData1() =>
-        GetDynamics().Select(a => new object[] { a });
+    public static IEnumerable<object[]> GetDynamicsData1() => CombinatorsSKITests.GetDynamicsData1();
 
     public static IEnumerable<object[]> GetDynamicsData2() =>
-        from a in GetDynamics()
-        from b in GetDynamics()
+        from a in CombinatorsSKITests.GetDynamics()
+        from b in CombinatorsSKITests.GetDynamics()
         select new object[] { a, b };
 
     #endregion

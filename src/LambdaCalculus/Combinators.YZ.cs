@@ -3,7 +3,6 @@
 namespace LambdaCalculus;
 
 public static partial class Combinators
-
 {
     // Y := λf. (λx.f (x x)) (λx.f (x x))
     [EditorBrowsable(EditorBrowsableState.Never)]

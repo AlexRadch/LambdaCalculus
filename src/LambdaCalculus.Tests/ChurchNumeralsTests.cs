@@ -10,7 +10,7 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetNextIntsData))]
     public void ZeroTest(Func<int, int> succ, int zero)
     {
-        NextNumeral next = x => succ(x);
+        NextValue next = x => succ(x);
         Assert.Equal(zero, ZeroF(next)(zero));
         Assert.Equal(zero, Zero(next)(zero));
         Assert.Equal(zero, LazyZero()(next)(zero));
@@ -31,7 +31,7 @@ public class ChurchNumeralsTests
     [MemberData(nameof(GetNextIntsData))]
     public void OneTest(Func<int, int> succ, int zero)
     {
-        NextNumeral next = x => succ(x);
+        NextValue next = x => succ(x);
         var one = succ(zero);
         Assert.Equal(one, OneF(next)(zero));
         Assert.Equal(one, One(next)(zero));

@@ -5,8 +5,8 @@ using static LambdaCalculus.Combinators;
 
 public class CombinatorsOmegaTests
 {
-    // SumSA :⁡= λf.λx IsZero⁡ x x (x + (f f (x - 1)))
-    Func<Numeral, Numeral> SumSA(SelfApplicable<Func<Numeral, Numeral>> f) => x =>
+    // SASum :⁡= λf.λx IsZero⁡ x x (x + (f f (x - 1)))
+    Func<Numeral, Numeral> SASum(SelfApplicable<Func<Numeral, Numeral>> f) => x =>
         LazyIf(IsZero(x))
             (() => x)
             (() => Plus(x)(f(f)(Pred(x))))
@@ -14,13 +14,13 @@ public class CombinatorsOmegaTests
 
     [Theory]
     [MemberData(nameof(GetUIntsData1))]
-    public void ItSelfTest(uint x)
+    public void SelfAppliedTest(uint x)
     {
-        var Sum1 = SumSA(SumSA);
-        var Sum2 = ItSelf((SelfApplicable<Func<Numeral, Numeral>>)SumSA);
+        var Sum1 = SASum(SASum);
+        var Sum2 = SelfApplied<Func<Numeral, Numeral>>(SASum);
 
         var cx = x.ToChurch();
-        var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
+        var expected = (uint)Enumerable.Range(1, (int)x).Sum();
         Assert.Equal(expected, Sum1(cx).UnChurch());
         Assert.Equal(expected, Sum2(cx).UnChurch());
     }

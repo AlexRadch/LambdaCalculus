@@ -1,14 +1,13 @@
 ﻿namespace LambdaCalculus;
 
-public delegate TResult SelfApplicable<TResult>(SelfApplicable<TResult> self);
+public delegate TResult SelfApplicable<TResult>(SelfApplicable<TResult> sa);
 
 public static partial class Combinators
-
 {
-    // ItSelf := λf. f (f)
-    public static TResult ItSelf<TResult>(SelfApplicable<TResult> f) => f(f);
+    // SelfApplied := λf. f (f)
+    public static TResult SelfApplied<TResult>(SelfApplicable<TResult> f) => f(f);
 
 
     // Omega := λ. ItSelf(ItSelf);
-    public static TResult Omega<TResult>() => ItSelf<TResult>(ItSelf);
+    public static TResult Omega<TResult>() => SelfApplied<TResult>(SelfApplied);
 }
