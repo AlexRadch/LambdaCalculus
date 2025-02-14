@@ -53,6 +53,29 @@ public class CombinatorsSKITests
         Assert.Equal(x, Skι(Skι)(x));
     }
 
+    [Theory]
+    [MemberData(nameof(GetDynamicsData2))]
+    public void SkιKTest(object x, object y)
+    {
+        Assert.Equal(x, Skι(Skι(Skι(Skι)))(x)(y));
+    }
+
+    [Fact]
+    public void SkιSTest()
+    {
+        foreach (var x in GetBoolXs())
+        {
+            foreach (var y in GetBoolYs())
+            {
+                foreach (var z in ChurchBooleansTests.GetBools())
+                {
+                    var expected = x(z)(y(z));
+                    Assert.Equal(expected, Skι(Skι(Skι(Skι(Skι))))(x)(y)(z));
+                }
+            }
+        }
+    }
+
     #endregion
 
     #region GetData
