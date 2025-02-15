@@ -4,6 +4,8 @@ using static LambdaCalculus.Combinators;
 
 public class CombinatorsSKITests
 {
+    #region S K I
+
     [Theory]
     [MemberData(nameof(GetDynamicsData1))]
     public void ITest(object x)
@@ -11,9 +13,8 @@ public class CombinatorsSKITests
         Assert.Equal(x, I(x));
         Assert.Equal(x, I(I(x)));
 
-        dynamic dx = x;
-        Assert.Equal(dx, I(dx));
-        Assert.Equal(dx, I(I(dx)));
+        Assert.Equal(x, Id(x));
+        Assert.Equal(x, Id(Id(x)));
     }
 
     [Theory]
@@ -40,14 +41,9 @@ public class CombinatorsSKITests
         }
     }
 
-    #region SK
+    #endregion
 
-    [Theory]
-    [MemberData(nameof(GetDynamicsData1))]
-    public void SkITest(object x)
-    {
-        Assert.Equal(x, SkI(x));
-    }
+    #region Iota
 
     [Theory]
     [MemberData(nameof(GetDynamicsData1))]
@@ -81,7 +77,69 @@ public class CombinatorsSKITests
 
     #endregion
 
+    #region Sk
+
+    [Theory]
+    [MemberData(nameof(GetDynamicsData1))]
+    public void SkITest(object x)
+    {
+        Assert.Equal(x, SkI(x));
+        Assert.Equal(x, SkI(SkI(x)));
+
+        Assert.Equal(x, SkId(x));
+        Assert.Equal(x, SkId(SkId(x)));
+    }
+
+    [Theory]
+    [MemberData(nameof(GetDynamicsData2))]
+    public void SkTrueTest(object @true, object @false)
+    {
+        Assert.Equal(@true, SkTrue(@true)(@false));
+    }
+
+    [Theory]
+    [MemberData(nameof(GetDynamicsData2))]
+    public void SkFalseTest(object @true, object @false)
+    {
+        Assert.Equal(@false, SkFalse(K(@true))(K(@false))(K));
+    }
+
+    [Theory]
+    [MemberData(nameof(GetBoolsData1))]
+    public void SkNotTest(bool x)
+    {
+        var sx = x.ToSki();
+        Assert.Equal(!x, UnSkiBoolean(SkNot(sx)));
+        Assert.Equal(x, UnSkiBoolean(SkNot(SkNot(sx))));
+    }
+
+    [Theory]
+    [MemberData(nameof(GetBoolsData2))]
+    public void SkOrTest(bool x, bool y)
+    {
+        var sx = x.ToSki();
+        var sy = y.ToSki();
+        var expected = x || y;
+        Assert.Equal(expected, UnSkiBoolean(SkOr(sx)(sy)));
+    }
+
+    [Theory]
+    [MemberData(nameof(GetBoolsData2))]
+    public void SkAndTest(bool x, bool y)
+    {
+        var sx = x.ToSki();
+        var sy = y.ToSki();
+        var expected = x && y;
+        Assert.Equal(expected, UnSkiBoolean(SkAnd(sx)(sy)));
+    }
+
+    #endregion
+
     #region GetData
+
+    public static IEnumerable<object[]> GetBoolsData1 => ChurchBooleansTests.GetBoolsData1();
+
+    public static IEnumerable<object[]> GetBoolsData2 => ChurchBooleansTests.GetBoolsData2();
 
     public static IEnumerable<dynamic> GetDynamics()
     {

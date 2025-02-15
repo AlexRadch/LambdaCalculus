@@ -40,7 +40,7 @@ public class ChurchBooleansTests
     }
 
     [Theory]
-    [MemberData(nameof(GetBoolsData))]
+    [MemberData(nameof(GetBoolsData1))]
     public void ToChurchTest(bool b)
     {
         foreach(var @true in CombinatorsSKITests.GetDynamics())
@@ -52,7 +52,7 @@ public class ChurchBooleansTests
     }
 
     [Theory]
-    [MemberData(nameof(GetBoolsData))]
+    [MemberData(nameof(GetBoolsData1))]
     public void UnChurchTest(bool a)
     {
         var ca = a.ToChurch();
@@ -70,7 +70,7 @@ public class ChurchBooleansTests
     #region Operations
 
     [Theory]
-    [MemberData(nameof(GetBoolsData))]
+    [MemberData(nameof(GetBoolsData1))]
     public void NotTest(bool a)
     {
         var ca = a.ToChurch();
@@ -184,7 +184,7 @@ public class ChurchBooleansTests
     #region Operators
 
     [Theory]
-    [MemberData(nameof(GetBoolsData))]
+    [MemberData(nameof(GetBoolsData1))]
     public void IfTest(bool b)
     {
         foreach (var @then in CombinatorsSKITests.GetDynamics())
@@ -301,7 +301,7 @@ public class ChurchBooleansTests
         yield return true;
     }
 
-    public static IEnumerable<object[]> GetBoolsData() =>
+    public static IEnumerable<object[]> GetBoolsData1() =>
         GetBools().Select(b => new object[] { b });
 
     public static IEnumerable<object[]> GetBoolsData2() =>
