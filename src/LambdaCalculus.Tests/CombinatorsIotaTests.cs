@@ -16,6 +16,7 @@ public class CombinatorsIotaTests
     public void IotaITest(object x)
     {
         Assert.Equal(x, IotaI(x));
+        Assert.Equal(x, IotaI(IotaI(x)));
     }
 
     [Theory]
@@ -23,6 +24,7 @@ public class CombinatorsIotaTests
     public void IotaKTest(object x, object y)
     {
         Assert.Equal(x, IotaK(x)(y));
+        Assert.Equal(x, IotaK(IotaK(x)(y))(y));
     }
 
     [Fact]

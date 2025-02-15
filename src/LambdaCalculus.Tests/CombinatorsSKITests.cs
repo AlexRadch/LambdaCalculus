@@ -9,9 +9,11 @@ public class CombinatorsSKITests
     public void ITest(object x)
     {
         Assert.Equal(x, I(x));
+        Assert.Equal(x, I(I(x)));
 
         dynamic dx = x;
         Assert.Equal(dx, I(dx));
+        Assert.Equal(dx, I(I(dx)));
     }
 
     [Theory]
@@ -19,6 +21,7 @@ public class CombinatorsSKITests
     public void KTest(object x, object y)
     {
         Assert.Equal(x, K(x)(y));
+        Assert.Equal(x, K(K(x)(y))(y));
     }
 
     [Fact]
