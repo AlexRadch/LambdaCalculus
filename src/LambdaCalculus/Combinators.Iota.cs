@@ -7,7 +7,7 @@ public static partial class Combinators
         f((Func<dynamic, Func<dynamic, Func<dynamic, dynamic>>>)(a => b => c => a(c)(b(c))))
         ((Func<dynamic, Func<dynamic, dynamic>>)(d => e => d));
 
-    #region
+    #region SKI
 
     // IotaI = (ιι)
     public static readonly Func<dynamic, dynamic> IotaI = ι(ι);

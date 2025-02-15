@@ -11,7 +11,7 @@ public static partial class Combinators
     // S := λx.λy.λz. x z (y z)
     public static readonly Func<dynamic, Func<dynamic, Func<dynamic, dynamic>>> S = x => y => z => x(z)(y(z));
 
-    #region 
+    #region Sk
 
     // SkI := SKK
     public static T SkI<T>(T x) => S(K)(K)(x!);

@@ -81,11 +81,12 @@ public static partial class Church
     #region Operators
 
     // If := λp.λt.λe. p t e := λp. p := Id
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public static Boolean If(Boolean p) => p;
     public static Func<Func<dynamic>, Func<Func<dynamic>, dynamic>> LazyIf(Boolean p) => @then => @else => p(@then)(@else)();
+    //public static Func<Boolean<dynamic, Boolean>, Func<Boolean<dynamic, Boolean>, dynamic>> LazyIf(Boolean p) => @then => @else => p(@then)(@else)(True);
     public static Func<Func<T>, Func<Func<T>, T>> LazyIf<T>(Boolean p) => @then => @else => p(@then)(@else)();
-
-    //public static Func<Func<dynamic>, Func<Func<dynamic>, dynamic>> If(Func<Boolean> p) => LazyIf(p());
+    //public static Func<Boolean<T, Boolean>, Func<Boolean<T, Boolean>, T>> LazyIf<T>(Boolean p) => @then => @else => p(@then)(@else)(True);
 
     #endregion
 

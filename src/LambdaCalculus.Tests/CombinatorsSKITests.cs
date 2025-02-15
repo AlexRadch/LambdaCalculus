@@ -40,7 +40,7 @@ public class CombinatorsSKITests
         }
     }
 
-    #region
+    #region SK
 
     [Theory]
     [MemberData(nameof(GetDynamicsData1))]
