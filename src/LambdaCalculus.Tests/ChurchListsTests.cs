@@ -66,23 +66,23 @@ public class ChurchListsTests
         Assert.Equal(3, (int)Head(list3));
     }
 
-    [Fact]
-    public void HeadOrNillTest()
-    {
-        Assert.True(IsNil((List)HeadOrNil(Nil)).UnChurch());
+    //[Fact]
+    //public void HeadOrNillTest()
+    //{
+    //    Assert.True(IsNil((List)HeadOrNil(Nil)).UnChurch());
 
-        var list0 = Nil;
-        Assert.True(IsNil((List)HeadOrNil(list0)).UnChurch());
+    //    var list0 = Nil;
+    //    Assert.True(IsNil((List)HeadOrNil(list0)).UnChurch());
 
-        var list1 = Cons(1)(list0);
-        Assert.Equal(1, (int)HeadOrNil(list1));
+    //    var list1 = Cons(1)(list0);
+    //    Assert.Equal(1, (int)HeadOrNil(list1));
 
-        var list2 = Cons(2)(list1);
-        Assert.Equal(2, (int)HeadOrNil(list2));
+    //    var list2 = Cons(2)(list1);
+    //    Assert.Equal(2, (int)HeadOrNil(list2));
 
-        var list3 = Cons(3)(list2);
-        Assert.Equal(3, (int)HeadOrNil(list3));
-    }
+    //    var list3 = Cons(3)(list2);
+    //    Assert.Equal(3, (int)HeadOrNil(list3));
+    //}
 
     [Fact]
     public void TailTest()

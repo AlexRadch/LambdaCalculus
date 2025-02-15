@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using static LambdaCalculus.Church;
 
 namespace LambdaCalculus;
 
@@ -36,8 +35,8 @@ public static partial class Church
     // Head := First
     public static dynamic Head(List l) => l(h => t => h);
 
-    // HeadOrNil := λl. l (λh.λt.λ_. h⁡) Nil
-    public static dynamic HeadOrNil(List l) => l(h => t => new Func<List, dynamic>(_ => h))(Nil);
+    //// HeadOrNil := λl. l (λh.λt.λ_. h⁡) Nil
+    //public static dynamic HeadOrNil(List l) => l(h => t => new Func<List, dynamic>(_ => h))(Nil);
 
     // Tail := Second
     public static List Tail(List l) => l(h => t => t);
