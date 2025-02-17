@@ -1,6 +1,6 @@
 namespace LambdaCalculus.Tests;
 
-using static LambdaCalculus.Combinators;
+using static LambdaCalculus.SKI;
 
 public class CombinatorsSKITests
 {
@@ -43,7 +43,7 @@ public class CombinatorsSKITests
 
     #endregion
 
-    #region Iota
+    #region Combinators
 
     [Theory]
     [MemberData(nameof(GetDynamicsData1))]
@@ -75,10 +75,6 @@ public class CombinatorsSKITests
         }
     }
 
-    #endregion
-
-    #region Sk
-
     [Theory]
     [MemberData(nameof(GetDynamicsData1))]
     public void SkITest(object x)
@@ -90,47 +86,85 @@ public class CombinatorsSKITests
         Assert.Equal(x, SkId(SkId(x)));
     }
 
+    #endregion
+
+    #region SKI
+
     [Theory]
     [MemberData(nameof(GetDynamicsData2))]
-    public void SkTrueTest(object @true, object @false)
+    public void TTest(object @true, object @false)
     {
-        Assert.Equal(@true, SkTrue(@true)(@false));
+        Assert.Equal(@true, T(@true)(@false));
+        Assert.Equal(@true, TB(@true)(@false));
     }
 
     [Theory]
     [MemberData(nameof(GetDynamicsData2))]
-    public void SkFalseTest(object @true, object @false)
+    public void FTest(object @true, object @false)
     {
-        Assert.Equal(@false, SkFalse(K(@true))(K(@false))(K));
+        Assert.Equal(@false, F(K(@true))(K(@false))(K));
+        Assert.Equal(@false, FB(K(@true))(K(@false))(K));
     }
 
     [Theory]
     [MemberData(nameof(GetBoolsData1))]
-    public void SkNotTest(bool x)
+    public void NotTest(bool x)
     {
         var sx = x.ToSki();
-        Assert.Equal(!x, UnSkiBoolean(SkNot(sx)));
-        Assert.Equal(x, UnSkiBoolean(SkNot(SkNot(sx))));
+        Assert.Equal(!x, UnSkiBoolean(Not(sx)));
+        Assert.Equal(x, UnSkiBoolean(Not(Not(sx))));
+
+        Assert.Equal(!x, NotB(sx).UnSki());
+        Assert.Equal(x, NotB(NotB(sx)).UnSki());
     }
 
     [Theory]
     [MemberData(nameof(GetBoolsData2))]
-    public void SkOrTest(bool x, bool y)
+    public void OrTest(bool x, bool y)
     {
         var sx = x.ToSki();
         var sy = y.ToSki();
+
         var expected = x || y;
-        Assert.Equal(expected, UnSkiBoolean(SkOr(sx)(sy)));
+        Assert.Equal(expected, UnSkiBoolean(Or(sx)(sy)));
+        Assert.Equal(expected, OrB(sx)(sy).UnSki());
     }
 
     [Theory]
     [MemberData(nameof(GetBoolsData2))]
-    public void SkAndTest(bool x, bool y)
+    public void AndTest(bool x, bool y)
     {
         var sx = x.ToSki();
         var sy = y.ToSki();
+
         var expected = x && y;
-        Assert.Equal(expected, UnSkiBoolean(SkAnd(sx)(sy)));
+        Assert.Equal(expected, UnSkiBoolean(And(sx)(sy)));
+        Assert.Equal(expected, AndB(sx)(sy).UnSki());
+    }
+
+    #endregion
+
+    #region Convertions
+
+    [Theory]
+    [MemberData(nameof(GetBoolsData1))]
+    public void BoolToSkiTest(bool b)
+    {
+        foreach (var @true in GetDynamics())
+            foreach (var @false in GetDynamics())
+            {
+                var expected = b ? @true : @false;
+                Assert.Equal(expected, b.ToSki()(K(@true))(K(@false))(K));
+            }
+    }
+
+    [Theory]
+    [MemberData(nameof(GetBoolsData1))]
+    public void UnSkiTest(bool a)
+    {
+        var ca = a.ToSki();
+        Assert.Equal(a, ca.UnSki());
+        Assert.Equal(a, UnSkiBoolean(ca));
     }
 
     #endregion

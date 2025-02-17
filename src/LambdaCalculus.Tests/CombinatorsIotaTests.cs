@@ -1,6 +1,6 @@
 namespace LambdaCalculus.Tests;
 
-using static LambdaCalculus.Combinators;
+using static LambdaCalculus.Iota;
 
 public class CombinatorsIotaTests
 {

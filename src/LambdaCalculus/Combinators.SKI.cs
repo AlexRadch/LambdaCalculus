@@ -1,6 +1,8 @@
-﻿namespace LambdaCalculus;
+﻿using System.Diagnostics;
 
-public static partial class Combinators
+namespace LambdaCalculus;
+
+public static partial class SKI
 {
     #region S K I
 
@@ -16,41 +18,52 @@ public static partial class Combinators
 
     #endregion
 
-    #region Iota
+    #region Combinators
+
+    // SkI := SKK
+    public static readonly Func<dynamic, dynamic> SkI = S(K)(K);
+    public static T SkId<T>(T x) => S(K)(K)(x!);
 
     // Skι := λx. xSK
     public static readonly Func<dynamic, dynamic> Skι = x => x(S)(K);
 
     #endregion
 
-    #region Sk
+    #region Boolean
 
-    // SkI := SKK
-    public static T SkId<T>(T x) => S(K)(K)(x!);
-    public static readonly Func<dynamic, dynamic> SkI = S(K)(K);
+    // Boolean := λt.λf. t|f
+    [DebuggerDisplay("{LambdaCalculus.SKI.UnSki(this)}")]
+    public delegate Func<dynamic, dynamic> Boolean(dynamic @true);
 
-    // SkTrue := K
-    public static readonly Func<dynamic, dynamic> SkTrue = K;
+    // T := K
+    public static readonly Func<dynamic, Func<dynamic, dynamic>> T = K;
+    public static readonly Boolean TB = @true => K(@true);
 
-    // SkFalse := SK
-    public static readonly Func<dynamic, dynamic> SkFalse = S(K);
+    // F := SK
+    public static readonly Func<dynamic, Func<dynamic, dynamic>> F = S(K);
+    public static readonly Boolean FB = @true => S(K)(@true);
 
-    // SkNot := S(SI(KF))(KT) := λb. λb (SK) K
-    public static readonly Func<dynamic, dynamic> SkNot = S(S(I)(K(SkFalse)))(K(SkTrue));
+    // Not := S(SI(KF))(KT) := λb. λb (SK) K
+    public static readonly Func<dynamic, dynamic> Not = S(S(I)(K(F)))(K(T));
+    public static readonly Func<Boolean, Boolean> NotB = a => S(S(I)(K(FB)))(K(TB))(a);
 
-    // SkOr := SI(KT) := λx.λy. xTy
-    public static readonly Func<dynamic, dynamic> SkOr = S(I)(K(SkTrue));
+    // Or := SI(KT) := λx.λy. xTy
+    public static readonly Func<dynamic, dynamic> Or = S(I)(K(T));
+    public static readonly Func<Boolean, Func<Boolean, Boolean>> OrB = a => b => S(I)(K(TB))(a)(b);
 
-    // SkAnd := SS(K(KF)) := λx.λy. xyF
-    public static readonly Func<dynamic, dynamic> SkAnd = S(S)(K(K(SkFalse)));
+    // And := SS(K(KF)) := λx.λy. xyF
+    public static readonly Func<dynamic, dynamic> And = S(S)(K(K(F)));
+    public static readonly Func<Boolean, Func<Boolean, Boolean>> AndB = a => b => S(S)(K(K(FB)))(a)(b);
 
     #endregion
 
     #region Convertions
 
-    public static Func<dynamic, dynamic> ToSki(this bool b) => b ? SkTrue : SkFalse;
+    public static Boolean ToSki(this bool b) => b ? TB : FB;
 
-    public static bool UnSkiBoolean(Func<dynamic, dynamic> b) => b(K(true))(K(false))(K);
+    public static bool UnSki(this Boolean b) => b(K(true))(K(false))(K);
+
+    public static bool UnSkiBoolean(dynamic b) => b(K(true))(K(false))(K);
 
     #endregion
 }
