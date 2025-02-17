@@ -24,8 +24,35 @@ public static partial class SKI
     public static readonly Func<dynamic, dynamic> SkI = S(K)(K);
     public static T SkId<T>(T x) => S(K)(K)(x!);
 
-    // Skι := λx. xSK
-    public static readonly Func<dynamic, dynamic> Skι = x => x(S)(K);
+    // Skι := λx.xSK := S(λx.xS)(λx.K) := S(S(λx.x)(λx.S))(KK) := S(SI(KS))(KK)
+    public static readonly Func<dynamic, dynamic> Skι = S(S(I)(K(S)))(K(K));
+
+    #region BCKW
+
+    // B := S(KS)K
+    public static readonly Func<dynamic, dynamic> B = S(K(S))(K);
+
+    // C := S(S(K(S(KS)K))S)(KK)
+    public static readonly Func<dynamic, dynamic> C = S(S(K(S(K(S))(K)))(S))(K(K));
+
+    // W := SS(SK)
+    public static readonly Func<dynamic, dynamic> W = S(S)(S(K));
+
+    #endregion
+
+    #endregion
+
+    #region Self-application and recursion
+
+    // U := λx.xx := S(λx.x)(λx.x) := SII
+    //public static readonly Func<dynamic, dynamic> U = S(I(I));
+
+    // H := λx.(λy.x(yy)) = λx.(S(λy.x)(λy.yy)) := λx.(S(Kx)(S(λy.y)(λy.y))) := λx.S(Kx)(SII) :=
+    // S(λx.S(Kx))(λx.(SII)) := S(S(λx.S)(λx.Kx))(K(SII)) := S(S(KS)K)(K(SII))
+    //public static readonly Func<dynamic, dynamic> H = S(S(K(S))(K))(K(S(I)(I)));
+
+    // Yα = SIIβ = SII(Hα) = S(K(SII))H α = S(K(SII))(S(S(KS)K)(K(SII))) α
+    public static readonly Func<dynamic, dynamic> Y = S(K(S(I)(I)))(S(S(K(S))(K))(K(S(I)(I))));
 
     #endregion
 
