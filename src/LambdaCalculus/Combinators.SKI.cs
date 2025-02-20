@@ -29,13 +29,13 @@ public static partial class SKI
 
     #region BCKW
 
-    // B := S(KS)K
+    // B := λxyz.x(yz) := S(KS)K
     public static readonly Func<dynamic, dynamic> B = S(K(S))(K);
 
-    // C := S(S(K(S(KS)K))S)(KK)
+    // C := λxyz.xzy := S(S(K(S(KS)K))S)(KK)
     public static readonly Func<dynamic, dynamic> C = S(S(K(S(K(S))(K)))(S))(K(K));
 
-    // W := SS(SK)
+    // W := λxy.xyy := SS(SK)
     public static readonly Func<dynamic, dynamic> W = S(S)(S(K));
 
     #endregion

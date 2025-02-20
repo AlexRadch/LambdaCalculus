@@ -47,6 +47,19 @@ public class CombinatorsSKITests
 
     [Theory]
     [MemberData(nameof(GetDynamicsData1))]
+    public void SkITest(object x)
+    {
+        Assert.Equal(x, SkI(x));
+        Assert.Equal(x, SkI(SkI(x)));
+
+        Assert.Equal(x, SkId(x));
+        Assert.Equal(x, SkId(SkId(x)));
+    }
+
+    #region Iota
+
+    [Theory]
+    [MemberData(nameof(GetDynamicsData1))]
     public void SkιITest(object x)
     {
         Assert.Equal(x, Skι(Skι)(x));
@@ -75,16 +88,130 @@ public class CombinatorsSKITests
         }
     }
 
-    [Theory]
-    [MemberData(nameof(GetDynamicsData1))]
-    public void SkITest(object x)
-    {
-        Assert.Equal(x, SkI(x));
-        Assert.Equal(x, SkI(SkI(x)));
+    #endregion
 
-        Assert.Equal(x, SkId(x));
-        Assert.Equal(x, SkId(SkId(x)));
+    #region BCKW
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void BTest(int z)
+    {
+        {
+            // Test case 1: Simple numeric composition
+            // multiplyBy2 = n => n * 2
+            // add1 = n => n + 1
+            // Expected: f1(f2(z)) = (z + 1) * 2
+            // Expected: f2(f1(z)) = (z * 2) + 1
+            // Expected: f1(f1(z)) = (z * 2) * 2
+            // Expected: f2(f2(z)) = (z + 1) + 1
+
+#pragma warning disable IDE0039 // Use local function
+            Func<dynamic, dynamic> multiplyBy2 = n => n * 2;
+            Func<dynamic, dynamic> add1 = n => n + 1;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal((z + 1) * 2, B(multiplyBy2)(add1)(z));
+            Assert.Equal((z * 2) + 1, B(add1)(multiplyBy2)(z));
+            Assert.Equal(z * 2 * 2, B(multiplyBy2)(multiplyBy2)(z));
+            Assert.Equal(z + 1 + 1, B(add1)(add1)(z));
+        }
+
+        {
+            // Test case 2: More complex composition
+            // square = n => n * n
+            // add2 = n => n + 2
+            // Expected: f1(f2(z)) = (z + 2)^2
+            // Expected: f2(f1(z)) = (z^2) + 2
+            // Expected: f1(f1(z)) = (z^2)^2
+            // Expected: f2(f2(z)) = (z + 2) + 2
+
+#pragma warning disable IDE0039 // Use local function
+            Func<int, int> square = n => n * n;
+            Func<int, int> add2 = n => n + 2;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal((z + 2) * (z + 2), B(square)(add2)(z));
+            Assert.Equal((z * z) + 2, B(add2)(square)(z));
+            Assert.Equal((z * z) * (z * z), B(square)(square)(z));
+            Assert.Equal(z + 2 + 2, B(add2)(add2)(z));
+        }
     }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void CTest(int y)
+    {
+        {
+            // Test case 1: Simple numeric composition
+            // x = f => n => f(n) * 2
+            // z = n => n + 1
+            // Expected: x(z(y)) = (y + 1) * 2
+
+#pragma warning disable IDE0039 // Use local function
+            Func<dynamic, dynamic> x = f => new Func<dynamic, dynamic>(n => f(n) * 2);
+            Func<dynamic, dynamic> z = n => n + 1;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal((y + 1) * 2, C(x)(y)(z));
+        }
+
+        {
+            // Test case 2: More complex composition
+            // x = f => n => f(n)^2
+            // z = n => n + 2
+            // Expected: x(y(z)) = (y + 2)^2
+
+#pragma warning disable IDE0039 // Use local function
+            Func<Func<int, int>, Func<int, int>> x = f => n => { var t = f(n); return t * t; };
+            Func<int, int> z = n => n + 2;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal((y + 2) * (y + 2), C(x)(y)(z));
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(GetIntsData1))]
+    public void WTest(int y)
+    {
+        {
+            // Test case 1: Addition
+            // x = a => b => a + b
+            // Expected: x(y)(y) = y + y
+
+#pragma warning disable IDE0039 // Use local function
+            Func<dynamic, Func<dynamic, dynamic>> x = a => b => a + b;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal(y + y, W(x)(y));
+        }
+
+        {
+            // Test case 2: Multiplication
+            // x = a => b => a * b
+            // Expected: x(y)(y) = y * y
+
+#pragma warning disable IDE0039 // Use local function
+            Func<int, Func<int, int>> x = a => b => a * b;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal(y * y, W(x)(y));
+        }
+
+        {
+            // Test case 3: More complex operation
+            // x = a => b => a * b - b / 2 + a
+            // Expected: x(y)(y) = y * y - y / 2 + y
+
+#pragma warning disable IDE0039 // Use local function
+            Func<int, Func<int, int>> x = a => b => a * b - b / 2 + a;
+#pragma warning restore IDE0039 // Use local function
+
+            Assert.Equal(y * y - y / 2 + y, W(x)(y));
+        }
+    }
+
+    #endregion
 
     #endregion
 
@@ -225,6 +352,8 @@ public class CombinatorsSKITests
         yield return new Func<bool, Func<bool, bool>>(x => y => x || y);
         yield return new Func<bool, Func<bool, bool>>(x => y => true);
     }
+
+    public static IEnumerable<object[]> GetIntsData1 => ChurchSignedNumbersTests.GetIntsData1();
 
     #endregion
 }
