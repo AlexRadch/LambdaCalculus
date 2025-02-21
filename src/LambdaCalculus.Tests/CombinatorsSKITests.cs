@@ -233,18 +233,28 @@ public class CombinatorsSKITests
         Assert.Equal(expected, uSum(x));
     }
 
-    //[Theory]
-    //[MemberData(nameof(GetUIntsData1))]
-    //public void YSumTest(uint x)
-    //{
-    //    var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void ZSumTest(uint x)
+    {
+        {
+            Func<uint, uint> RSum(Func<uint, uint> r) => x => x == 0 ? x : x + r(x - 1);
 
-    //    Func<uint, uint> SumSA(Func<uint, uint> r) => x =>
-    //        x == 0 ? x : x + r(x - 1);
+            var Sum = Z_01<uint, uint>(RSum);
+            var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
+            Assert.Equal(expected, Sum(x));
+        }
 
-    //    var Sum = Y(new Func<Func<uint, uint>, Func<uint, uint>>(SumSA))(x);
-    //    Assert.Equal(expected, Sum(x));
-    //}
+        {
+            var RSum = (dynamic r) => (dynamic x) => x == 0 ? x : x + r(x - 1);
+
+            var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
+
+            Assert.Equal(expected, Z_02(RSum)(x));
+            Assert.Equal(expected, Z_03(RSum)(x));
+            Assert.Equal(expected, Z_04(RSum)(x));
+        }
+    }
 
     #endregion
 

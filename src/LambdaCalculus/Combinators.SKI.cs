@@ -47,17 +47,39 @@ public static partial class SKI
     // U := λf.ff := S(λf.f)(λf.f) := SII
     public static readonly Func<dynamic, dynamic> U = S(I)(I);
 
-    // U := λf.ff := S(λf.f)(λf.f) := SII
     public static TResult Uf<TResult>(SelfApplicable<TResult> f) => U(f);
 
-    // H := λx.(λy.x(yy)) = λx.(S(λy.x)(λy.yy)) := λx.(S(Kx)(S(λy.y)(λy.y))) := λx.S(Kx)(SII) :=
-    // S(λx.S(Kx))(λx.(SII)) := S(S(λx.S)(λx.Kx))(K(SII)) := S(S(KS)K)(K(SII))
+    public static Func<SelfApplicable<TResult>, TResult> Ut<TResult>() => f => U(f);
+
+    //// H := λx.(λy.x(yy)) = λx.(S(λy.x)(λy.yy)) := λx.(S(Kx)(S(λy.y)(λy.y))) := λx.S(Kx)(SII) :=
+    //// S(λx.S(Kx))(λx.(SII)) := S(S(λx.S)(λx.Kx))(K(SII)) := S(S(KS)K)(K(SII))
     //public static readonly Func<dynamic, dynamic> H = S(S(K(S))(K))(K(S(I)(I)));
 
-    // Yα = SIIβ = SII(Hα) = S(K(SII))H α = S(K(SII))(S(S(KS)K)(K(SII))) α
-    // λx. f (x x) = S(λx. f)(λx. x x) = S(Kf)(S(λx.x)(λx.x)) = S(Kf)(SII)
-    // λx. 
+    //// Yα = SIIβ = SII(Hα) = S(K(SII))H α = S(K(SII))(S(S(KS)K)(K(SII))) α
+    //// λx.f(xx) = S(λx.f)(λx.xx) = S(Kf)(S(λx.x)(λx.x)) = S(Kf)(SII)
     //public static readonly Func<dynamic, dynamic> Y = S(K(S(I)(I)))(S(S(K(S))(K))(K(S(I)(I))));
+    //public static Func<T, TResult> Yf<T, TResult>(Func<Func<T, TResult>, Func<T, TResult>> f) => S(K(S(I)(I)))(S(S(K(S))(K))(K(S(I)(I))))(f);
+    //public static Func<T, TResult> Yfx<T, TResult>(Func<Func<T, TResult>, Func<T, TResult>> f) => x => S(K(S(I)(I)))(S(S(K(S))(K))(K(S(I)(I))))(f)(x);
+
+    // Z = λf.U(λx.f(λv.xxv))
+    public static Func<T, TResult> Z_01<T, TResult>(Func<Func<T, TResult>, Func<T, TResult>> f) => 
+        Uf<Func<T, TResult>>(x => f(v => x(x)(v)));
+
+    // Z = λf.U(λx.f(λv.xxv)) = S(λf.U)(λf.λx.f(λv.xxv)) = S(KU)(λf.λx.f(λv.xxv))
+    public static Func<dynamic, dynamic> Z_02 => S(K(U))
+        ((Func<dynamic, dynamic>)(f => (Func<dynamic, dynamic>)(x => f((Func<dynamic, dynamic>)(v => x(x)(v))))));
+
+    // Z = λf.U(λx.f(λv.xxv)) = S(λf.U)(λf.λx.f(λv.xxv)) = S(KU)(λf.λx.f(λv.xxv)) = S(KU)(λf.( λx.f(λv.xxv) )) =
+    // S(KU)(λf.( S(λx.f)(λx.λv.xxv) )) = S(KU)(λf.S(Kf)(λx.λv.xxv))
+    public static Func<dynamic, dynamic> Z_03 => S(K(U))
+        ((Func<dynamic, dynamic>)(f => S(K(f))((Func<dynamic, dynamic>)(x => (Func<dynamic, dynamic>)(v => x(x)(v))))));
+
+    // Z = λf.U(λx.f(λv.xxv)) = S(λf.U)(λf.λx.f(λv.xxv)) = S(KU)(λf.λx.f(λv.xxv)) = S(KU)(λf.( λx.f(λv.xxv) )) =
+    // S(KU)(λf.( S(λx.f)(λx.λv.xxv) )) = S(KU)(λf.S(Kf)(λx.λv.xxv)) = S(KU)( S(λf.S(Kf))(λf.λx.λv.xxv) ) =
+    // S(KU)(S( λf.S(Kf) )(K(λx.λv.xxv))) = S(KU)(S( S(λf.S)(λf.Kf) )(K(λx.λv.xxv))) = S(KU)(S(S(KS)K)(K( λx.λv.xxv )))
+    public static Func<dynamic, dynamic> Z_04 => S(K(U))(S(S(K(S))(K))(K(
+        (Func<dynamic, dynamic>)(x => (Func<dynamic, dynamic>)(v => x(x)(v)))
+    )));
 
     #endregion
 
