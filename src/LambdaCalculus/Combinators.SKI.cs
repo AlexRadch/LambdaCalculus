@@ -69,11 +69,11 @@ public static partial class SKI
 
     // T := K
     public static readonly Func<dynamic, Func<dynamic, dynamic>> T = K;
-    public static readonly Boolean TB = @true => K(@true);
+    public static readonly Boolean TB = @true => T(@true);
 
     // F := SK
     public static readonly Func<dynamic, Func<dynamic, dynamic>> F = S(K);
-    public static readonly Boolean FB = @true => S(K)(@true);
+    public static readonly Boolean FB = @true => F(@true);
 
     // Not := S(SI(KF))(KT) := λb. λb (SK) K
     public static readonly Func<dynamic, dynamic> Not = S(S(I)(K(F)))(K(T));
