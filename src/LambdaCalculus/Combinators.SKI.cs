@@ -44,15 +44,20 @@ public static partial class SKI
 
     #region Self-application and recursion
 
-    // U := λx.xx := S(λx.x)(λx.x) := SII
-    //public static readonly Func<dynamic, dynamic> U = S(I(I));
+    // U := λf.ff := S(λf.f)(λf.f) := SII
+    public static readonly Func<dynamic, dynamic> U = S(I)(I);
+
+    // U := λf.ff := S(λf.f)(λf.f) := SII
+    public static TResult Uf<TResult>(SelfApplicable<TResult> f) => U(f);
 
     // H := λx.(λy.x(yy)) = λx.(S(λy.x)(λy.yy)) := λx.(S(Kx)(S(λy.y)(λy.y))) := λx.S(Kx)(SII) :=
     // S(λx.S(Kx))(λx.(SII)) := S(S(λx.S)(λx.Kx))(K(SII)) := S(S(KS)K)(K(SII))
     //public static readonly Func<dynamic, dynamic> H = S(S(K(S))(K))(K(S(I)(I)));
 
     // Yα = SIIβ = SII(Hα) = S(K(SII))H α = S(K(SII))(S(S(KS)K)(K(SII))) α
-    public static readonly Func<dynamic, dynamic> Y = S(K(S(I)(I)))(S(S(K(S))(K))(K(S(I)(I))));
+    // λx. f (x x) = S(λx. f)(λx. x x) = S(Kf)(S(λx.x)(λx.x)) = S(Kf)(SII)
+    // λx. 
+    //public static readonly Func<dynamic, dynamic> Y = S(K(S(I)(I)))(S(S(K(S))(K))(K(S(I)(I))));
 
     #endregion
 

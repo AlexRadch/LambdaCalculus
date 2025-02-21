@@ -105,10 +105,8 @@ public class CombinatorsSKITests
             // Expected: f1(f1(z)) = (z * 2) * 2
             // Expected: f2(f2(z)) = (z + 1) + 1
 
-#pragma warning disable IDE0039 // Use local function
             Func<dynamic, dynamic> multiplyBy2 = n => n * 2;
             Func<dynamic, dynamic> add1 = n => n + 1;
-#pragma warning restore IDE0039 // Use local function
 
             Assert.Equal((z + 1) * 2, B(multiplyBy2)(add1)(z));
             Assert.Equal((z * 2) + 1, B(add1)(multiplyBy2)(z));
@@ -125,10 +123,8 @@ public class CombinatorsSKITests
             // Expected: f1(f1(z)) = (z^2)^2
             // Expected: f2(f2(z)) = (z + 2) + 2
 
-#pragma warning disable IDE0039 // Use local function
             Func<int, int> square = n => n * n;
             Func<int, int> add2 = n => n + 2;
-#pragma warning restore IDE0039 // Use local function
 
             Assert.Equal((z + 2) * (z + 2), B(square)(add2)(z));
             Assert.Equal((z * z) + 2, B(add2)(square)(z));
@@ -179,9 +175,7 @@ public class CombinatorsSKITests
             // x = a => b => a + b
             // Expected: x(y)(y) = y + y
 
-#pragma warning disable IDE0039 // Use local function
             Func<dynamic, Func<dynamic, dynamic>> x = a => b => a + b;
-#pragma warning restore IDE0039 // Use local function
 
             Assert.Equal(y + y, W(x)(y));
         }
@@ -191,9 +185,7 @@ public class CombinatorsSKITests
             // x = a => b => a * b
             // Expected: x(y)(y) = y * y
 
-#pragma warning disable IDE0039 // Use local function
             Func<int, Func<int, int>> x = a => b => a * b;
-#pragma warning restore IDE0039 // Use local function
 
             Assert.Equal(y * y, W(x)(y));
         }
@@ -203,15 +195,56 @@ public class CombinatorsSKITests
             // x = a => b => a * b - b / 2 + a
             // Expected: x(y)(y) = y * y - y / 2 + y
 
-#pragma warning disable IDE0039 // Use local function
             Func<int, Func<int, int>> x = a => b => a * b - b / 2 + a;
-#pragma warning restore IDE0039 // Use local function
 
             Assert.Equal(y * y - y / 2 + y, W(x)(y));
         }
     }
 
     #endregion
+
+    #endregion
+
+    #region Self-application and recursion
+
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void UTest(uint x)
+    {
+        Func<dynamic, dynamic> SaSum(dynamic r) => x =>
+            x == 0 ? 0 : x + r(r)(x - 1);
+
+        var uSum = U(new Func<dynamic, dynamic>(SaSum));
+
+        var expected = (uint)Enumerable.Range(1, (int)x).Sum();
+        Assert.Equal(expected, (uint)uSum(x));
+    }
+
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void UfTest(uint x)
+    {
+        Func<uint, uint> SaSum(SelfApplicable<Func<uint, uint>> r) => x =>
+            x == 0 ? 0 : x + r(r)(x - 1);
+
+        var uSum = Uf<Func<uint, uint>>(SaSum);
+
+        var expected = (uint)Enumerable.Range(1, (int)x).Sum();
+        Assert.Equal(expected, uSum(x));
+    }
+
+    //[Theory]
+    //[MemberData(nameof(GetUIntsData1))]
+    //public void YSumTest(uint x)
+    //{
+    //    var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
+
+    //    Func<uint, uint> SumSA(Func<uint, uint> r) => x =>
+    //        x == 0 ? x : x + r(x - 1);
+
+    //    var Sum = Y(new Func<Func<uint, uint>, Func<uint, uint>>(SumSA))(x);
+    //    Assert.Equal(expected, Sum(x));
+    //}
 
     #endregion
 
@@ -354,6 +387,8 @@ public class CombinatorsSKITests
     }
 
     public static IEnumerable<object[]> GetIntsData1 => ChurchSignedNumbersTests.GetIntsData1();
+
+    public static IEnumerable<object[]> GetUIntsData1 => ChurchNumeralsTests.GetUIntsData1();
 
     #endregion
 }
