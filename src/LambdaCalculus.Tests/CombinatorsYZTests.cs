@@ -8,10 +8,7 @@ public class CombinatorsYZTests
 {
     // SumSA :⁡= λf.λx IsZero⁡ x x (x + (f (x - 1)))
     Func<Numeral, Numeral> SumSA(Func<Numeral, Numeral> f) => x =>
-        LazyIf(IsZero(x))
-            (() => x)
-            (() => Plus(x)(f(Pred(x))))
-        ;
+        LazyIf(IsZero(x))(() => x)(() => Plus(x)(f(Pred(x))));
 
     [Theory]
     [MemberData(nameof(GetUIntsData1))]
@@ -26,9 +23,17 @@ public class CombinatorsYZTests
             Assert.Equal(expected, Sum2(cx).UnChurch());
         else
             Assert.Throws<NullReferenceException>(() => Sum2(cx).UnChurch());
+    }
 
-        var Sum = Z<Numeral, Numeral>(SumSA);
-        Assert.Equal(expected, Sum(cx).UnChurch());
+    [Theory]
+    [MemberData(nameof(GetUIntsData1))]
+    public void ZTest(uint x)
+    {
+        var cx = x.ToChurch();
+        var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
+
+        var Sum2 = Z<Numeral, Numeral>(SumSA);
+        Assert.Equal(expected, Sum2(cx).UnChurch());
     }
 
     #region GetData

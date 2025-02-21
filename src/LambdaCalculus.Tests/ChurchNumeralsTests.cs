@@ -320,13 +320,6 @@ public class ChurchNumeralsTests
             expected *= i;
 
         Assert.Equal(expected, FactorialR(cx).UnChurch());
-
-        Func<Numeral, Numeral> fact3 = Fact(Fact(Fact(Fact(null!))));
-        if (x < 4)
-            Assert.Equal(expected, fact3(cx).UnChurch());
-        else
-            Assert.Throws<NullReferenceException>(() => fact3(cx));
-
         Assert.Equal(expected, Factorial(cx).UnChurch());
     }
 

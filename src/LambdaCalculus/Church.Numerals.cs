@@ -198,25 +198,18 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Numeral FactorialR(Numeral x) => LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(FactorialR(Pred(x))));
 
-    // Fact := λf. λx. If (x == 0) (1) (x * (f (x - 1)))
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Numeral> Fact(Func<Numeral, Numeral> f) => x => 
-        LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(f(Pred(x))));
-
-    // Factorial ⁡:= Z Fact
-    public static readonly Func<Numeral, Numeral> Factorial = Combinators.Z<Numeral, Numeral>(Fact);
+    // Factorial ⁡:= Z λr.λx. If (x == 0) (1) (x * (r (x - 1)))
+    public static readonly Func<Numeral, Numeral> Factorial = Combinators.Z<Numeral, Numeral>(r => x =>
+        LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(r(Pred(x)))));
 
     // FibonacciR := λx. If (x <= 1) (1) (FibonacciR(x - 1) + FibonacciR(x - 2))
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Numeral FibonacciR(Numeral x) =>
         LazyIf(LEQ(x)(One))(() => x)(() => Plus(FibonacciR(Pred(x)))(FibonacciR(Pred(Pred(x)))));
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Numeral> Fib(Func<Numeral, Numeral> f) => x =>
-        LazyIf(LEQ(x)(One))(() => x)(() => Plus(f(Pred(x)))(f(Pred(Pred(x)))));
-
-    // Factorial ⁡:= Z Fact
-    public static readonly Func<Numeral, Numeral> Fibonacci = Combinators.Z<Numeral, Numeral>(Fib);
+    // Factorial ⁡:= Z λr.λx. If (x <= 1) (1) (r(x - 1) + r(x - 2))
+    public static readonly Func<Numeral, Numeral> Fibonacci = Combinators.Z<Numeral, Numeral>(r => x =>
+        LazyIf(LEQ(x)(One))(() => x)(() => Plus(r(Pred(x)))(r(Pred(Pred(x))))));
 
     #endregion
 
