@@ -63,10 +63,10 @@ public static partial class SKI
     public static Func<T, TResult> Zf<T, TResult>(Func<Func<T, TResult>, Func<T, TResult>> f) => 
         Uf<Func<T, TResult>>(x => f(v => Uf(x)(v)));
 
-    // Z = λf.U(λx.f(λv.Uxv)) = S(λf.U)(λf.λx.f(λv.Uxv)) = S(KU)(λf.λx.f(λv.Uxv)) = S(KU)(λf.( λx.f(λv.Uxv) )) =
-    // S(KU)(λf.( S(λx.f)(λx.λv.Uxv) )) = S(KU)(λf.S(Kf)(λx.λv.Uxv)) = S(KU)( S(λf.S(Kf))(λf.λx.λv.Uxv) ) =
-    // S(KU)(S( λf.S(Kf) )(K(λx.λv.Uxv))) = S(KU)(S( S(λf.S)(λf.Kf) )(K(λx.λv.Uxv))) = S(KU)(S(S(KS)K)(K( λx.λv.Uxv )))
-    // = S(KU)(S(S(KS)K)(K( λx.S(λv.Ux)(λv.v) ))) = S(KU)(S(S(KS)K)(K( λx.S(λv.Ux)I ))) =
+    // Z = λf.U(λx.f(λv.Uxv)) = S(λf.U)(λf.λx.f(λv.Uxv)) = S(KU)(λf.λx.f(λv.Uxv)) = S(KU)(λf.( S(λx.f)(λx.λv.Uxv) )) =
+    // S(KU)(λf.S(Kf)(λx.λv.Uxv)) = S(KU)( S(λf.S(Kf))(λf.λx.λv.Uxv) ) = S(KU)(S( λf.S(Kf) )(K(λx.λv.Uxv))) =
+    // S(KU)(S( S(λf.S)(λf.Kf) )(K(λx.λv.Uxv))) = S(KU)(S(S(KS)K)(K( λx.λv.Uxv ))) =
+    // S(KU)(S(S(KS)K)(K( λx.S(λv.Ux)(λv.v) ))) = S(KU)(S(S(KS)K)(K( λx.S(λv.Ux)I ))) =
     // S(KU)(S(S(KS)K)(K(S( λx.S(λv.Ux) ) (λx.I) ))) = S(KU)(S(S(KS)K)(K(S( λx.S(λv.Ux) )(KI)))) =
     // S(KU)(S(S(KS)K)(K(S(S(KS)( λx.λv.Ux ))(KI)))) = S(KU)(S(S(KS)K)(K(S(S(KS)( λx.S(λv.U)(λv.x) ))(KI)))) =
     // S(KU)(S(S(KS)K)(K(S(S(KS)( λx.S(KU)(Kx) ))(KI)))) = S(KU)(S(S(KS)K)(K(S(S(KS)( S( λx.S(KU) )( λx.Kx ) ))(KI))))
