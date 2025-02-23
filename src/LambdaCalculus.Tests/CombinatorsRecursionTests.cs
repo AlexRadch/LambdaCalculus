@@ -12,7 +12,7 @@ public class CombinatorsRecursionTests
     {
         // SaSum :⁡= λf.λx IsZero⁡ x x (x + (f f (x - 1)))
         Func<Numeral, Numeral> SaSum(SelfApplicable<Func<Numeral, Numeral>> f) => x =>
-            LazyIf(IsZero(x))(() => x)(() => Plus(x)(f(f)(Pred(x))));
+            LazyIf<Numeral>(IsZero(x))(_ => x)(_ => Plus(x)(f(f)(Pred(x))));
 
         Func<Numeral, Numeral> Sum = SaSum(SaSum);
 
@@ -27,7 +27,7 @@ public class CombinatorsRecursionTests
     {
         // SaSum :⁡= λf.λx IsZero⁡ x x (x + (f f (x - 1)))
         Func<Numeral, Numeral> SaSum(SelfApplicable<Func<Numeral, Numeral>> f) => x =>
-            LazyIf(IsZero(x))(() => x)(() => Plus(x)(f(f)(Pred(x))));
+            LazyIf<Numeral>(IsZero(x))(_ => x)(_ => Plus(x)(f(f)(Pred(x))));
 
         Func<Numeral, Numeral> uSum = U<Func<Numeral, Numeral>>(SaSum);
 
@@ -42,7 +42,7 @@ public class CombinatorsRecursionTests
     {
         // RSum :⁡= λr.λx IsZero⁡ x x (x + (r (x - 1)))
         Func<Numeral, Numeral> RSum(Func<Numeral, Numeral> r) => x =>
-            LazyIf(IsZero(x))(() => x)(() => Plus(x)(r(Pred(x))));
+            LazyIf<Numeral>(IsZero(x))(_ => x)(_ => Plus(x)(r(Pred(x))));
 
         var cx = x.ToChurch();
         var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();
@@ -61,7 +61,7 @@ public class CombinatorsRecursionTests
     {
         // RSum :⁡= λr.λx IsZero⁡ x x (x + (r (x - 1)))
         Func<Numeral, Numeral> RSum(Func<Numeral, Numeral> r) => x =>
-            LazyIf(IsZero(x))(() => x)(() => Plus(x)(r(Pred(x))));
+            LazyIf<Numeral>(IsZero(x))(_ => x)(_ => Plus(x)(r(Pred(x))));
 
         var cx = x.ToChurch();
         var expected = (uint)Enumerable.Range(0, (int)x + 1).Sum();

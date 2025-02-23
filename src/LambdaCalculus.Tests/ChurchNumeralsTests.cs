@@ -13,7 +13,7 @@ public class ChurchNumeralsTests
         NextValue next = x => succ(x);
         Assert.Equal(zero, ZeroF(next)(zero));
         Assert.Equal(zero, Zero(next)(zero));
-        Assert.Equal(zero, LazyZero()(next)(zero));
+        Assert.Equal(zero, LazyZero(True)(next)(zero));
 
         Assert.Equal(zero, ZeroF_False(next)(zero));
         Assert.Equal(zero, Zero_False(next)(zero));
@@ -21,7 +21,7 @@ public class ChurchNumeralsTests
         next = x => throw new NotImplementedException();
         Assert.Equal(zero, ZeroF(next)(zero));
         Assert.Equal(zero, Zero(next)(zero));
-        Assert.Equal(zero, LazyZero()(next)(zero));
+        Assert.Equal(zero, LazyZero(True)(next)(zero));
 
         Assert.Equal(zero, ZeroF_False(next)(zero));
         Assert.Equal(zero, Zero_False(next)(zero));
@@ -35,21 +35,21 @@ public class ChurchNumeralsTests
         var one = succ(zero);
         Assert.Equal(one, OneF(next)(zero));
         Assert.Equal(one, One(next)(zero));
-        Assert.Equal(one, LazyOne()(next)(zero));
+        Assert.Equal(one, LazyOne(True)(next)(zero));
 
         Assert.Equal(one, OneF(OneF(next))(zero));
         Assert.Equal(one, One(One(next))(zero));
-        Assert.Equal(one, LazyOne()(LazyOne()(next))(zero));
+        Assert.Equal(one, LazyOne(True)(LazyOne(True)(next))(zero));
 
         var two = succ(one);
         Assert.Equal(two, OneF(next)(one));
         Assert.Equal(two, One(next)(one));
-        Assert.Equal(two, LazyOne()(LazyOne()(next))(one));
+        Assert.Equal(two, LazyOne(True)(LazyOne(True)(next))(one));
 
         next = x => succ(succ(x));
         Assert.Equal(two, OneF(next)(zero));
         Assert.Equal(two, One(next)(zero));
-        Assert.Equal(two, LazyOne()(next)(zero));
+        Assert.Equal(two, LazyOne(True)(next)(zero));
     }
 
     #endregion

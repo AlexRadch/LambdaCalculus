@@ -19,14 +19,14 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<dynamic, dynamic> NilF(dynamic h) => FalseF<dynamic, dynamic>(h);
     public static readonly List Nil = NilF;
-    public static readonly Func<List> LazyNil = () => NilF;
+    public static readonly Func<Boolean, List> LazyNil = _ => NilF;
 
     #endregion
 
     #region Constructors
 
     // Cons := Pair
-    public static Func<dynamic, List> Cons(dynamic h) => t => b => b(h)(t);
+    public static Func<List, List> Cons(dynamic h) => t => b => b(h)(t);
 
     #endregion
 
@@ -35,17 +35,14 @@ public static partial class Church
     // Head := First
     public static dynamic Head(List l) => l(h => t => h);
 
-    //// HeadOrNil := λl. l (λh.λt. True h⁡) Nil
-    //public static dynamic HeadOrNil(List l) => l(h => t => True(h))(Nil);
-
     // Tail := Second
     public static List Tail(List l) => l(h => t => t);
 
     // TailOrNil := λl. l (λh.λt. True t⁡) Nil
-    public static List TailOrNil(List l) => l(h => t => True(t))(Nil);
+    public static List TailOrNil(List l) => l(h => t => TrueF<List, List>(t))(Nil);
 
     // IsNil := λl. l (λh.λt. True False⁡) True
-    public static Boolean IsNil(List p) => p(h => t => True(False))(True);
+    public static Boolean IsNil(List p) => p(h => t => TrueF<Boolean, Boolean>(False))(True);
 
     // Length := Fold (λa.λh. Succ a) Zero
     public static Numeral Length(List l) => Fold(a => h => Succ(a))(Zero)(l);
@@ -76,7 +73,7 @@ public static partial class Church
 
     // Filter := λf.λl. RFold (λa.λh. f h (Cons h a) a) Nil l := λf. RFold (λa.λh. f h (Cons h a) a) Nil
     public static Func<List, List> Filter(Func<dynamic, dynamic> f) => l => 
-        RFold(a => h => LazyIf(f(h))(new Func<dynamic>(() => Cons(h)(a)))(new Func<dynamic>(() => a)))(Nil)(l);
+        RFold(a => h => LazyIf(f(h))(AsLazy(_ => Cons(h)(a)))(AsLazy(_ => a)))(Nil)(l);
 
     // Reverse := λl. Fold (λa.λh. Cons h a) Nil l := Fold (λa.λh. Cons h a) Nil
     public static List Reverse(List l) => Fold(a => h => Cons(h)(a))(Nil)(l);
@@ -92,8 +89,8 @@ public static partial class Church
     public static Func<Numeral, Func<List, List>> Skip = Combinators.Z<Numeral, Func<List, List>>(r => n => l => 
         l(h => t => TrueF<List, List>(
             LazyIf<List>(IsZero(n))
-                (() => l)
-                (() => r(Pred(n))(t))
+                (_ => l)
+                (_ => r(Pred(n))(t))
         ))
         (Nil));
 
@@ -105,32 +102,33 @@ public static partial class Church
     //         )))
     //         (Pair n Nil)
     //     ) l))
-    public static Func<List, List> SkipLast(Numeral n) => l => LazyIf(IsZero(n))(() => l)(() => Second(
+    public static Func<List, List> SkipLast(Numeral n) => l => LazyIf<List>(IsZero(n))(_ => l)(_ => Second(
         Combinators.Z<List, CPair<Numeral, List>>(r => lr => lr(h => t => True
             (r(t)(na => la => LazyIf<CPair<Numeral, List>>(IsZero(na))
-                (() => Pair<Numeral, List>(Zero)(Cons(h)(la)))
-                (() => Pair<Numeral, List>(Pred(na))(Nil))
+                (_ => Pair<Numeral, List>(Zero)(Cons(h)(la)))
+                (_ => Pair<Numeral, List>(Pred(na))(Nil))
             )))
             (Pair<Numeral, List>(n)(Nil))
         )(l)));
 
     // SkipWhile := λf. Z (λr.λl. l (λh.λt. True (f hr (r tr) lr)) Nil)
     public static Func<List, List> SkipWhile(Func<dynamic, Boolean> f) =>
-        Combinators.Z<List, List>(r => lr => lr (hr => tr => True(
+        Combinators.Z<List, List>(r => lr => lr (hr => tr => TrueF<List, List>(
             LazyIf<List>(f(hr))
-                (new Func<List>(() => r(tr)))
-                (new Func<List>(() => lr))
+                (AsLazy(_ => r(tr)))
+                (AsLazy(_ => lr))
         ))
         (Nil));
 
     // Take := Z (λr.λn.λl. l (λh.λt. True (IsZero n Nil (Cons h (r (Pred n) t)))) Nil)
-    public static Func<Numeral, Func<List, List>> Take =
-        Combinators.Z<Numeral, Func<List, List>>(r => n => l => l(h => t => True(
-            LazyIf(IsZero(n))
+    public static Func<List, List> Take(Numeral n) =>
+        Combinators.Z<Numeral, Func<List, List>>(r => n => l => l(h => t => TrueF<List, List>(
+            LazyIf<List>(IsZero(n))
                 (LazyNil)
-                (() => Cons(h)(r(Pred(n))(t)))
+                (_ => Cons(h)(r(Pred(n))(t)))
         ))
-        (Nil));
+        (Nil)
+        )(n);
 
     // SkipLast := λn.λl. IsZero(n) l (Second (
     //     Z (λr.λlr. lr (λhr.λtr. True
@@ -149,20 +147,20 @@ public static partial class Church
     //         )))
     //         (Pair n Nil)
     //     ) l))
-    public static Func<List, List> TakeLast(Numeral n) => l => LazyIf(IsZero(n))(() => Nil)(() => Second(
+    public static Func<List, List> TakeLast(Numeral n) => l => LazyIf<List>(IsZero(n))(_ => Nil)(_ => Second(
         Combinators.Z<List, CPair<Numeral, List>>(r => lr => lr(h => t => True
-            (r(t)(n => la => LazyIf(IsZero(n))
-                (() => Pair<Numeral, List>(Zero)(la))
-                (() => Pair<Numeral, List>(Pred(n))(lr))
+            (r(t)(n => la => LazyIf<CPair<Numeral, List>>(IsZero(n))
+                (_ => Pair<Numeral, List>(Zero)(la))
+                (_ => Pair<Numeral, List>(Pred(n))(lr))
             )))
             (Pair<Numeral, List>(n)(Nil))
         )(l)));
 
     // TakeWhile := λf. Z (λr.λl. l (λh.λt. True (f d (Cons h (r t)) Nil) Nil))
     public static Func<List, List> TakeWhile(Func<dynamic, Boolean> f) =>
-        Combinators.Z<List, List>(r => l => l(h => t => True(
+        Combinators.Z<List, List>(r => l => l(h => t => TrueF<List, List>(
             LazyIf(f(h))
-                (new Func<List>(() => Cons(h)(r(t))))
+                (AsLazy(_ => Cons(h)(r(t))))
                 (LazyNil)
             ))
             (Nil));
@@ -170,9 +168,9 @@ public static partial class Church
     // All := Z (λr.λf.λl. l (λh.λt. True (f h (r f t) False)) True)
     public static Func<Func<dynamic, Boolean>, Func<List, Boolean>> All =
         Combinators.Z<Func<dynamic, Boolean>, Func<List, Boolean>>(r => f => l => l
-            (h => t => True(
-                LazyIf(f(h))
-                    (new Func<Boolean>(() => r(f)(t)))
+            (h => t => TrueF<Boolean, Boolean>(
+                LazyIf<Boolean>(f(h))
+                    (AsLazy(_ => r(f)(t)))
                     (LazyFalse)
             ))
             (True));
@@ -180,10 +178,10 @@ public static partial class Church
     // Any := Z (λr.λf.λl. l (λh.λt. True (f h (True) (r f t)) False)
     public static Func<Func<dynamic, Boolean>, Func<List, Boolean>> Any =
         Combinators.Z<Func<dynamic, Boolean>, Func<List, Boolean>>(r => f => l => l
-            (h => t => True(
-                LazyIf(f(h))
+            (h => t => TrueF<Boolean, Boolean>(
+                LazyIf<Boolean>(f(h))
                     (LazyTrue)
-                    (new Func<Boolean>(() => r(f)(t)))
+                    (AsLazy(_ => r(f)(t)))
             ))
             (False));
 
@@ -193,10 +191,10 @@ public static partial class Church
     // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt. True (f h (Cons n Nil) (r (Succ n) t))) Nil)) Zero
     public static Func<List, List> IndexOf(Func<dynamic, Boolean> f) =>
         Combinators.Z<Numeral, Func<List, List>>(r => n => l => l
-            (h => t => True(
+            (h => t => TrueF<List, List>(
                 LazyIf<List>(f(h))
-                    (new Func<List>(() => Cons(n)(Nil)))
-                    (new Func<List>(() => r(Succ(n))(t)))
+                    (AsLazy(_ => Cons(n)(Nil)))
+                    (AsLazy(_ => r(Succ(n))(t)))
             ))
             (Nil)
         )
@@ -216,11 +214,11 @@ public static partial class Church
     // LastIndexOf := λf. (Z (λr.λn.λl. l (λh.λt. True ((λi IsNil i (f(h) (Cons n Nil) Nil) i) (r (Succ n) t))) Nil)) Zero
     public static Func<List, List> LastIndexOf(Func<dynamic, dynamic> f) =>
         Combinators.Z<Numeral, Func<List, List>>(r => n => l => l
-            (h => t => True(
+            (h => t => TrueF<List, List>(
                 new Func<List, List>(i =>
-                    LazyIf(IsNil(i))
-                        (() => f(h)(Cons(n)(Nil))(Nil))
-                        (() => i)
+                    LazyIf<List>(IsNil(i))
+                        (_ => f(h)(Cons(n)(Nil))(Nil))
+                        (_ => i)
                 )
                 (r(Succ(n))(t))
             ))
@@ -231,18 +229,18 @@ public static partial class Church
     // Range := λf.λz. (Z (λr.λs.λn. IsZero n Nil (Cons (s f z) (r (Succ s) (Pred n))))) Zero
     public static Func<dynamic, Func<Numeral, List>> Range(NextValue f) => z =>
         Combinators.Z<Numeral, Func<Numeral, List>>(r => s => n =>
-            LazyIf(IsZero(n))
+            LazyIf<List>(IsZero(n))
                 (LazyNil)
-                (() => Cons(s(f)(z))(r(Succ(s))(Pred(n))))
+                (_ => Cons(s(f)(z))(r(Succ(s))(Pred(n))))
         )
         (Zero);
 
     // Repeat := λv. (Z (λr.λn. IsZero n Nil (Cons v (r (Pred n))))
     public static Func<Numeral, List> Repeat(dynamic v) =>
         Combinators.Z<Numeral, List>(r => n =>
-            LazyIf(IsZero(n))
+            LazyIf<List>(IsZero(n))
                 (LazyNil)
-                (() => Cons(v)(r(Pred(n))))
+                (_ => Cons(v)(r(Pred(n))))
         );
 
     #endregion

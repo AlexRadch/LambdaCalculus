@@ -22,7 +22,7 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static NextValue ZeroF(NextValue f) => z => z;
     public static readonly Numeral Zero = ZeroF;
-    public static readonly Func<Numeral> LazyZero = () => ZeroF;
+    public static readonly Func<Boolean, Numeral> LazyZero = _ => ZeroF;
 
     // Zero := False
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -38,7 +38,7 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static NextValue OneF(NextValue f) => f;
     public static readonly Numeral One = OneF;
-    public static readonly Func<Numeral> LazyOne = () => OneF;
+    public static readonly Func<Boolean, Numeral> LazyOne = _ => OneF;
 
     #endregion
 
@@ -95,8 +95,8 @@ public static partial class Church
     // DivideR_mn ⁡:= λm.λn. if⁡ m >= n then⁡ 1 + (m − n) / n else⁡ 0
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Numeral> DivideR_mn(Numeral m) => n =>
-        LazyIf(GEQ(m)(n))
-            (() => Succ(DivideR_mn(Minus(m)(n))(n)))
+        LazyIf<Numeral>(GEQ(m)(n))
+            (_ => Succ(DivideR_mn(Minus(m)(n))(n)))
             (LazyZero);
 
     // Divide1R ⁡:= λm.λn. if⁡ n <= m then⁡ 0 else⁡ 1 + (m − n) / n 
@@ -104,9 +104,9 @@ public static partial class Church
     // Divide1R ⁡:= λm.λn. (λd. if⁡ (IsZero d) then⁡ 0 else⁡ 1 + d / n) (m - n)
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Numeral> Divide1R(Numeral m) => n => new Func<Numeral, Numeral>(d => 
-        LazyIf(IsZero(d))
+        LazyIf<Numeral>(IsZero(d))
             (LazyZero)
-            (() => Succ(Divide1R(d)(n)))
+            (_ => Succ(Divide1R(d)(n)))
         )
         (Minus(m)(n));
 
@@ -118,9 +118,9 @@ public static partial class Church
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Func<Numeral, Numeral>> Div1(Func<Numeral, Func<Numeral, Numeral>> f) => m => n =>
         new Func<Numeral, Numeral>(d =>
-        LazyIf(IsZero(d))
+        LazyIf<Numeral>(IsZero(d))
             (LazyZero)
-            (() => Succ(f(d)(n)))
+            (_ => Succ(f(d)(n)))
         )
         (Minus(m)(n));
 
@@ -140,17 +140,17 @@ public static partial class Church
     // ModuloR_mn ⁡:= λm.λn. if⁡ m >= n then⁡ (m − n) % n else⁡ m
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Numeral> ModuloR_mn(Numeral m) => n =>
-        LazyIf(GEQ(m)(n))
-            (() => ModuloR_mn(Minus(m)(n))(n))
-            (() => m);
+        LazyIf<Numeral>(GEQ(m)(n))
+            (_ => ModuloR_mn(Minus(m)(n))(n))
+            (_ => m);
 
     // Mod1 :⁡= λf.λm.λn (λd.IsZero⁡ d (m - 1) (f d n)) (Minus⁡ m n)
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Func<Numeral, Func<Numeral, Numeral>> Mod1(Func<Numeral, Func<Numeral, Numeral>> f) => m => n =>
         new Func<Numeral, Numeral>(d =>
-        LazyIf(IsZero(d))
-            (() => Pred(m))
-            (() => f(d)(n))
+        LazyIf<Numeral>(IsZero(d))
+            (_ => Pred(m))
+            (_ => f(d)(n))
         )
         (Minus(m)(n));
 
@@ -196,20 +196,20 @@ public static partial class Church
 
     // FactorialR := λx. If (x == 0) (1) (x * (FactorialR (x - 1)))
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Numeral FactorialR(Numeral x) => LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(FactorialR(Pred(x))));
+    public static Numeral FactorialR(Numeral x) => LazyIf<Numeral>(IsZero(x))(LazyOne)(_ => Mult(x)(FactorialR(Pred(x))));
 
     // Factorial ⁡:= Z λr.λx. If (x == 0) (1) (x * (r (x - 1)))
     public static readonly Func<Numeral, Numeral> Factorial = Combinators.Z<Numeral, Numeral>(r => x =>
-        LazyIf(IsZero(x))(LazyOne)(() => Mult(x)(r(Pred(x)))));
+        LazyIf<Numeral>(IsZero(x))(LazyOne)(_ => Mult(x)(r(Pred(x)))));
 
     // FibonacciR := λx. If (x <= 1) (1) (FibonacciR(x - 1) + FibonacciR(x - 2))
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static Numeral FibonacciR(Numeral x) =>
-        LazyIf(LEQ(x)(One))(() => x)(() => Plus(FibonacciR(Pred(x)))(FibonacciR(Pred(Pred(x)))));
+        LazyIf<Numeral>(LEQ(x)(One))(_ => x)(_ => Plus(FibonacciR(Pred(x)))(FibonacciR(Pred(Pred(x)))));
 
     // Factorial ⁡:= Z λr.λx. If (x <= 1) (1) (r(x - 1) + r(x - 2))
     public static readonly Func<Numeral, Numeral> Fibonacci = Combinators.Z<Numeral, Numeral>(r => x =>
-        LazyIf(LEQ(x)(One))(() => x)(() => Plus(r(Pred(x)))(r(Pred(Pred(x))))));
+        LazyIf<Numeral>(LEQ(x)(One))(_ => x)(_ => Plus(r(Pred(x)))(r(Pred(Pred(x))))));
 
     #endregion
 

@@ -73,7 +73,7 @@ public static partial class Church
 
     // DivZ = λx.λy.IsZero⁡ y 0 (Divide⁡ x y)
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Numeral> DivZ(Numeral x) => y => LazyIf(IsZero⁡(y))(() => Zero)(() => Divide⁡(x)(y));
+    public static Func<Numeral, Numeral> DivZ(Numeral x) => y => LazyIf<Numeral>(IsZero⁡(y))(_ => Zero)(_ => Divide⁡(x)(y));
 
     // DivideS = λx.λy.pair⁡(plus⁡ (DivZ⁡ (first⁡ x) (first⁡ y)) (DivZ⁡ (second⁡ x) (second⁡ y)))
     // (plus⁡ (DivZ⁡ (first⁡ x) (second⁡ y)) (DivZ⁡ (second⁡ x) (first⁡ y)))
@@ -82,7 +82,7 @@ public static partial class Church
 
     // ModZ = λx.λy.IsZero⁡ y 0 (x % y)
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static Func<Numeral, Numeral> ModZ(Numeral x) => y => LazyIf(IsZero⁡(y))(() => Zero)(() => Modulo(x)(y));
+    public static Func<Numeral, Numeral> ModZ(Numeral x) => y => LazyIf<Numeral>(IsZero⁡(y))(_ => Zero)(_ => Modulo(x)(y));
 
     // ModuloS = λx.λy.pair⁡(plus⁡ (ModZ⁡ (first⁡ x) (first⁡ y)) (ModZ⁡ (first⁡ x) (second⁡ y)))
     // (plus⁡ (ModZ⁡ (second⁡ x) (second⁡ y)) (ModZ⁡ (second⁡ x) (first⁡ y)))
@@ -106,9 +106,9 @@ public static partial class Church
     //     )
     //     (py - ny) )
     public static Func<Signed, Signed> ExpS(Signed x) => y => y(py => ny =>
-        new Func<Numeral, Signed>(d => LazyIf(IsZero⁡(d))
-            (() => DivideS(OneS)(Minus(ny)(py)(r => MultS(r)(x))(OneS)))
-            (() => d(r => MultS(r)(x))(OneS))
+        new Func<Numeral, Signed>(d => LazyIf<Signed>(IsZero⁡(d))
+            (_ => DivideS(OneS)(Minus(ny)(py)(r => MultS(r)(x))(OneS)))
+            (_ => d(r => MultS(r)(x))(OneS))
         )
         (Minus(py)(ny)));
 

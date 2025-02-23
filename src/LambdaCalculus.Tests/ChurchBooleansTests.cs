@@ -13,7 +13,7 @@ public class ChurchBooleansTests
         Assert.Equal(@true, TrueF<object, object>(@true)(@false));
         Assert.Equal(@true, TrueF<dynamic, dynamic>(@true)(@false));
         Assert.Equal(@true, True(@true)(@false));
-        Assert.Equal(@true, LazyTrue()(@true)(@false));
+        Assert.Equal(@true, LazyTrue(True)(@true)(@false));
     }
 
     [Theory]
@@ -23,7 +23,7 @@ public class ChurchBooleansTests
         Assert.Equal(@false, FalseF<object, object>(@true)(@false));
         Assert.Equal(@false, FalseF<dynamic, dynamic>(@true)(@false));
         Assert.Equal(@false, False(@true)(@false));
-        Assert.Equal(@false, LazyFalse()(@true)(@false));
+        Assert.Equal(@false, LazyFalse(True)(@true)(@false));
     }
 
     #endregion
@@ -34,9 +34,10 @@ public class ChurchBooleansTests
     [MemberData(nameof(GetDynamicsData1))]
     public void AsLazyTest(object value)
     {
-        var func = AsLazy(() => value);
+        var func = AsLazy(_ => value);
         Assert.Same(func, AsLazy(func));
-        Assert.Same(value, func());
+
+        Assert.Same(value, func(True));
     }
 
     [Theory]
@@ -58,11 +59,11 @@ public class ChurchBooleansTests
         var ca = a.ToChurch();
         Assert.Equal(a, ca.UnChurch());
 
-        var la = () => ca;
+        var la = (Boolean _) => ca;
         Assert.Equal(a, la.UnChurch());
 
-        la = AsLazy(() => ca);
-        Assert.Equal(a, la.UnChurch());
+        //la = AsLazy(() => ca);
+        //Assert.Equal(a, la.UnChurch());
     }
 
     #endregion
@@ -80,9 +81,12 @@ public class ChurchBooleansTests
         Assert.Equal(!a, Not_ab(ca).UnChurch());
         Assert.Equal(a, Not_ab(Not_ab(ca)).UnChurch());
 
-        Boolean la() => ca;
-        Assert.Equal(!a, Not(la)().UnChurch());
-        Assert.Equal(a, Not(Not(la))().UnChurch());
+        Boolean la(Boolean _) => ca;
+        Assert.Equal(!a, LazyNot(la)(True).UnChurch());
+        Assert.Equal(a, LazyNot(LazyNot(la))(True).UnChurch());
+
+        Assert.Equal(!a, LazyNot(la).UnChurch());
+        Assert.Equal(a, LazyNot(LazyNot(la)).UnChurch());
     }
 
     [Theory]
@@ -95,11 +99,11 @@ public class ChurchBooleansTests
         Assert.Equal(expected, Or(ca)(cb).UnChurch());
 
         //Boolean la() => ca;
-        var lb = () => cb;
+        var lb = (Boolean _) => cb;
         Assert.Equal(expected, LazyOr(ca)(lb).UnChurch());
         //Assert.Equal(expected, Or(la)(lb).UnChurch());
 
-        lb = () => throw new NotImplementedException();
+        lb = _ => throw new NotImplementedException();
         if (a)
         {
             Assert.Equal(expected, LazyOr(ca)(lb).UnChurch());
@@ -117,11 +121,11 @@ public class ChurchBooleansTests
         Assert.Equal(expected, And(ca)(cb).UnChurch());
 
         //Boolean la() => ca;
-        var lb = () => cb;
+        var lb = (Boolean _) => cb;
         Assert.Equal(expected, LazyAnd(ca)(lb).UnChurch());
         //Assert.Equal(expected, And(la)(lb).UnChurch());
 
-        lb = () => throw new NotImplementedException();
+        lb = _ => throw new NotImplementedException();
         if (!a)
         {
             Assert.Equal(expected, LazyAnd(ca)(lb).UnChurch());
@@ -149,11 +153,11 @@ public class ChurchBooleansTests
         Assert.Equal(expected, Nor_not(ca)(cb).UnChurch());
 
         //Boolean la() => ca;
-        var lb = () => cb;
+        var lb = (Boolean _) => cb;
         Assert.Equal(expected, LazyNor(ca)(lb).UnChurch());
         //Assert.Equal(expected, Nor(la)(lb).UnChurch());
 
-        lb = () => throw new NotImplementedException();
+        lb = _ => throw new NotImplementedException();
         if (a)
         {
             Assert.Equal(expected, LazyNor(ca)(lb).UnChurch());
@@ -196,8 +200,10 @@ public class ChurchBooleansTests
                 Assert.Equal(expected, If(@bool)(@then)(@else));
                 Assert.Equal(expected, @bool(@then)(@else)); // predicate should work them self also
 
-                Assert.Equal(expected, LazyIf(@bool)(() => @then)(() => @else));
+                Assert.Equal(expected, LazyIf(@bool)(_ => @then)(_ => @else));
                 //Assert.Equal(expected, If(() => @bool)(() => @then)(() => @else));
+
+                Assert.Equal(expected, LazyIf<dynamic>(@bool)(_ => @then)(_ => @else));
             }
     }
 

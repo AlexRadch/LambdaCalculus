@@ -29,11 +29,11 @@ public static class ChurchMath
     static Numeral EuclideanMinusR2(Numeral a, Numeral b)
     {
         return
-        LazyIf(IsZero(b))
-            (() => a)
-        (() => LazyIf(GEQ(a)(b))
-            (() => EuclideanMinusR2(b, Minus(a)(b)))
-            (() => EuclideanMinusR2(Minus(b)(a), a))
+        LazyIf<Numeral>(IsZero(b))
+            (_ => a)
+        (_ => LazyIf<Numeral>(GEQ(a)(b))
+            (_ => EuclideanMinusR2(b, Minus(a)(b)))
+            (_ => EuclideanMinusR2(Minus(b)(a), a))
         );
     }
 
