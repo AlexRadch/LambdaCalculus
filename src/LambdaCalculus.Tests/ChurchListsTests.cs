@@ -831,45 +831,28 @@ public class ChurchListsTests
 
         var list0 = Nil;
         var result = IndexOf(Test)(list0);
-        Assert.True(IsNil(result).UnChurch());
+        Assert.Equal(0u, result.UnChurch());
 
         {
             var list1 = Cons(1)(list0);
             result = IndexOf(Test)(list1);
-            Assert.True(IsNil(result).UnChurch());
+            Assert.Equal(0u, result.UnChurch());
 
             var list2 = Cons(3)(list0);
             result = IndexOf(Test)(list2);
-            Assert.True(IsNil(result).UnChurch());
+            Assert.Equal(0u, result.UnChurch());
 
             var list3 = Cons(4)(list2);
             result = IndexOf(Test)(list3);
-            Assert.False(IsNil(result).UnChurch());
-            Assert.Equal(0u, ((Numeral)Head(result)).UnChurch());
+            Assert.Equal(1u, result.UnChurch());
 
             var list4 = Cons(5)(list3);
             result = IndexOf(Test)(list4);
-            Assert.False(IsNil(result).UnChurch());
-            Assert.Equal(1u, ((Numeral)Head(result)).UnChurch());
+            Assert.Equal(2u, result.UnChurch());
 
             var list5 = Cons(6)(list4);
             result = IndexOf(Test)(list5);
-            Assert.False(IsNil(result).UnChurch());
-            Assert.Equal(0u, ((Numeral)Head(result)).UnChurch());
-        }
-
-        {
-            var list1 = Cons(1)(list0);
-            result = IndexOf(Test)(list1);
-            Assert.True(IsNil(result).UnChurch());
-
-            var list2 = Cons(3)(list1);
-            result = IndexOf(Test)(list2);
-            Assert.True(IsNil(result).UnChurch());
-
-            var list3 = Cons(5)(list2);
-            result = IndexOf(Test)(list3);
-            Assert.True(IsNil(result).UnChurch());
+            Assert.Equal(1u, result.UnChurch());
         }
     }
 
@@ -880,45 +863,28 @@ public class ChurchListsTests
 
         var list0 = Nil;
         var result = LastIndexOf(Test)(list0);
-        Assert.True(IsNil(result).UnChurch());
+        Assert.Equal(0u, result.UnChurch());
 
         {
             var list1 = Cons(1)(list0);
             result = LastIndexOf(Test)(list1);
-            Assert.True(IsNil(result).UnChurch());
+            Assert.Equal(0u, result.UnChurch());
 
             var list2 = Cons(3)(list0);
             result = LastIndexOf(Test)(list2);
-            Assert.True(IsNil(result).UnChurch());
+            Assert.Equal(0u, result.UnChurch());
 
             var list3 = Cons(4)(list2);
             result = LastIndexOf(Test)(list3);
-            Assert.False(IsNil(result).UnChurch());
-            Assert.Equal(0u, ((Numeral)Head(result)).UnChurch());
+            Assert.Equal(1u, result.UnChurch());
 
             var list4 = Cons(5)(list3);
             result = LastIndexOf(Test)(list4);
-            Assert.False(IsNil(result).UnChurch());
-            Assert.Equal(1u, ((Numeral)Head(result)).UnChurch());
+            Assert.Equal(2u, result.UnChurch());
 
             var list5 = Cons(6)(list4);
             result = LastIndexOf(Test)(list5);
-            Assert.False(IsNil(result).UnChurch());
-            Assert.Equal(2u, ((Numeral)Head(result)).UnChurch());
-        }
-
-        {
-            var list1 = Cons(1)(list0);
-            result = LastIndexOf(Test)(list1);
-            Assert.True(IsNil(result).UnChurch());
-
-            var list2 = Cons(3)(list1);
-            result = LastIndexOf(Test)(list2);
-            Assert.True(IsNil(result).UnChurch());
-
-            var list3 = Cons(5)(list2);
-            result = LastIndexOf(Test)(list3);
-            Assert.True(IsNil(result).UnChurch());
+            Assert.Equal(3u, result.UnChurch());
         }
     }
 

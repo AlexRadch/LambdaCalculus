@@ -188,17 +188,17 @@ public static partial class Church
     // ElementAt := λn.λl. Head (Skip n l)
     public static Func<List, dynamic> ElementAt(Numeral n) => l => Head(Skip(n)(l));
 
-    // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt. True (f h (Cons n Nil) (r (Succ n) t))) Nil)) Zero
-    public static Func<List, List> IndexOf(Func<dynamic, Boolean> f) =>
-        Combinators.Z<Numeral, Func<List, List>>(r => n => l => l
-            (h => t => TrueF<List, List>(
-                LazyIf<List>(f(h))
-                    (AsLazy(_ => Cons(n)(Nil)))
+    // IndexOf := λf. (Z (λr.λn.λl. l (λh.λt. True (f h n (r (Succ n) t))) Zero)) One
+    public static Func<List, Numeral> IndexOf(Func<dynamic, Boolean> f) =>
+        Combinators.Z<Numeral, Func<List, Numeral>>(r => n => l => l
+            (h => t => TrueF<Numeral, Numeral>(
+                LazyIf<Numeral>(f(h))
+                    (AsLazy(_ => n))
                     (AsLazy(_ => r(Succ(n))(t)))
             ))
-            (Nil)
+            (Zero)
         )
-        (Zero);
+        (One);
 
     //// LastIndexOf := RFold (λa.λh. a (λn.λt. True (Cons (Succ n) Nil)) (f h (Cons Zero Nil) Nil)) Nil
     //public static Func<List, List> LastIndexOf(Func<dynamic, dynamic> f) => l =>
@@ -211,20 +211,20 @@ public static partial class Church
     //            (LazyNil)
     //    ))(Nil)(l);
 
-    // LastIndexOf := λf. (Z (λr.λn.λl. l (λh.λt. True ((λi IsNil i (f(h) (Cons n Nil) Nil) i) (r (Succ n) t))) Nil)) Zero
-    public static Func<List, List> LastIndexOf(Func<dynamic, dynamic> f) =>
-        Combinators.Z<Numeral, Func<List, List>>(r => n => l => l
-            (h => t => TrueF<List, List>(
-                new Func<List, List>(i =>
-                    LazyIf<List>(IsNil(i))
-                        (_ => f(h)(Cons(n)(Nil))(Nil))
+    // LastIndexOf := λf. (Z (λr.λn.λl. l (λh.λt. True ((λi IsZero i (f(h) n Zero) i) (r (Succ n) t))) Zero)) One
+    public static Func<List, Numeral> LastIndexOf(Func<dynamic, dynamic> f) =>
+        Combinators.Z<Numeral, Func<List, Numeral>>(r => n => l => l
+            (h => t => TrueF<Numeral, Numeral>(
+                new Func<Numeral, Numeral>(i =>
+                    LazyIf<Numeral>(IsZero(i))
+                        (_ => f(h)(n)(Zero))
                         (_ => i)
                 )
                 (r(Succ(n))(t))
             ))
-            (Nil)
+            (Zero)
         )
-        (Zero);
+        (One);
 
     // Range := λf.λz. (Z (λr.λs.λn. IsZero n Nil (Cons (s f z) (r (Succ s) (Pred n))))) Zero
     public static Func<dynamic, Func<Numeral, List>> Range(NextValue f) => z =>
