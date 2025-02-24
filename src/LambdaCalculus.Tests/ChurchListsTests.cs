@@ -910,6 +910,37 @@ public class ChurchListsTests
         Assert.True(IsNil(Tail(Tail(Tail(repeated)))).UnChurch());
     }
 
+    [Fact]
+    public void ZipTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        List[] lists = [list0, list1, list2, list3];
+
+        for (var i = 0; i < lists.Length; i++)
+        {
+            for (var j = 0; j < lists.Length; j++)
+            {
+                var zippedList = Zip(lists[i])(lists[j]);
+                var l = Math.Min(i, j);
+
+                Assert.Equal((uint)l, Length(zippedList).UnChurch());
+                for (var k = 0; k < l; k++)
+                {
+                    CPair<dynamic, dynamic> h = Head(zippedList);
+                    Assert.Equal(i - k, (int)First(h));
+                    Assert.Equal(j - k, (int)Second(h));
+
+                    zippedList = Tail(zippedList);
+                }
+                Assert.True(IsNil(zippedList).UnChurch());
+            }
+        }
+    }
+
     #endregion
 
     #region Extensions

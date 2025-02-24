@@ -8,7 +8,7 @@ public static partial class Church
     #region Delegates
 
     // List := CPair<dynamic, List> := λf. (λh.λt. )
-    [DebuggerDisplay("{LambdaCalculus.Church.UnChurch(this)}")]
+    [DebuggerDisplay("{System.Linq.Enumerable.ToList(LambdaCalculus.Church.UnChurch(this))}")]
     public delegate dynamic List(Boolean<dynamic, List> b);
 
     #endregion
@@ -243,6 +243,16 @@ public static partial class Church
                 (_ => Cons(v)(r(Pred(n))))
         );
 
+    // Zip := (Z (λr.λl1.λl2. l1 (λh1.λt1. True ( l2 (λh2.λt2. True (Cons (Pair h1, h2) r(t1, t2)) Nil ) Nil)
+    public static Func<List, Func<List, List>> Zip = Combinators.Z<List, Func<List, List>>(r => l1 => l2 =>
+        l1(h1 => t1 => TrueF<List, List>(
+            l2(h2 => t2 => TrueF<List, List>(
+                Cons(Pair<dynamic, dynamic>(h1)(h2))(r(t1)(t2))
+            ))
+            (Nil)
+        ))
+        (Nil));
+
     #endregion
 
     #region Extensions
@@ -257,12 +267,12 @@ public static partial class Church
     }
 
     // Church ListPair to LinkedList<dynamic>
-    public static IEnumerable<dynamic> UnChurch(this List p)
+    public static IEnumerable<dynamic> UnChurch(this List l)
     {
-        while (!IsNil(p).UnChurch())
+        while (!IsNil(l).UnChurch())
         {
-            yield return Head(p);
-            p = Tail(p);
+            yield return Head(l);
+            l = Tail(l);
         }
     }
 
