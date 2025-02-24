@@ -746,6 +746,9 @@ public class ChurchListsTests
         var range = Range(x => Succ(x))(One)(Zero);
         Assert.True(IsNil(range).UnChurch());
 
+        range = Range(x => SuccS(x))((-1).ToChurch())(Zero);
+        Assert.True(IsNil(range).UnChurch());
+
         range = Range(x => Succ(x))(One)(2u.ToChurch());
         Assert.Equal(1u, ((Numeral)Head(range)).UnChurch());
         Assert.Equal(2u, ((Numeral)Head(Tail(range))).UnChurch());
