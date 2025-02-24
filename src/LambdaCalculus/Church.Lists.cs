@@ -130,15 +130,6 @@ public static partial class Church
         (Nil)
         )(n);
 
-    // SkipLast := λn.λl. IsZero(n) l (Second (
-    //     Z (λr.λlr. lr (λhr.λtr. True
-    //         (r tr (λna.λla. IsZero(na)
-    //             (Pair Zero (Cons h la))
-    //             (Pair (Pred na) Nil)
-    //         )))
-    //         (Pair n Nil)
-    //     ) l))
-
     // TakeLast := λn.λl. IsZero(n) Nil (Second (
     //     Z (λr.λlr. lr (λh.λt. True
     //         ((r t) (λna.λla. IsZero(na)
