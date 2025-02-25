@@ -179,6 +179,17 @@ public static partial class Church
     // ElementAt := λn.λl. Head (Skip n l)
     public static Func<List, dynamic> ElementAt(Numeral n) => l => Head(Skip(n)(l));
 
+    // InsertAt := λn.λv.λl. Concat (Take n l) (Cons v (Skip n l))
+    public static Func<Numeral, Func<dynamic, Func<List, List>>> InsertAt = n => v => l =>
+        Concat(Take(n)(l))(Cons(v)(Skip(n)(l)));
+
+    // RemoveAt := λn.λl. Concat (Take n l) (Skip (Succ n) l)
+    public static Func<Numeral, Func<List, List>> RemoveAt = n => l => Concat(Take(n)(l))(Skip(Succ(n))(l));
+
+    // ReplaceAt := λn.λv.λl. Concat (Take n l) (Cons v (Skip (Succ n) l))
+    public static Func<Numeral, Func<dynamic, Func<List, List>>> ReplaceAt = n => v => l =>
+        Concat(Take(n)(l))(Cons(v)(Skip(Succ(n))(l)));
+
     // IndexOf := λf. Z (λr.λn.λl. l (λh.λt. True (f h n (r (Succ n) t))) Zero) One
     public static Func<List, Numeral> IndexOf(Func<dynamic, Boolean> f) =>
         Combinators.Z<Numeral, Func<List, Numeral>>(r => n => l => l

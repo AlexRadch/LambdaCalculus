@@ -666,14 +666,70 @@ public class ChurchListsTests
         var list2 = Cons(2)(list1);
         var list3 = Cons(3)(list2);
 
-        var result = ElementAt(0u.ToChurch())(list3);
-        Assert.Equal(3, (int)result);
+        System.Collections.Generic.List<int> expected = [3, 2, 1];
+        for (uint i = 0; i < 3; i++)
+            Assert.Equal(expected[(int)i], ElementAt(i.ToChurch())(list3));
+    }
 
-        result = ElementAt(1u.ToChurch())(list3);
-        Assert.Equal(2, (int)result);
+    [Fact]
+    public void InsertAtTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
 
-        result = ElementAt(2u.ToChurch())(list3);
-        Assert.Equal(1, (int)result);
+        for (uint i = 0; i < 10; i++)
+        {
+            var insertedList = InsertAt(i.ToChurch())(4)(list3);
+            
+            System.Collections.Generic.List<int> expected = [3, 2, 1];
+            expected.Insert(Math.Min(3, (int)i), 4);
+
+            Assert.Equal(expected, insertedList.UnChurch().Cast<int>());
+        }
+    }
+
+    [Fact]
+    public void RemoveAtTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        for (uint i = 0; i < 10; i++)
+        {
+            var removedList = RemoveAt(i.ToChurch())(list3);
+        
+            System.Collections.Generic.List<int> expected = [3, 2, 1];
+            if (i < 3)
+                expected.RemoveAt((int)i);
+
+            Assert.Equal(expected, removedList.UnChurch().Cast<int>());
+        }
+    }
+
+    [Fact]
+    public void ReplaceAtTest()
+    {
+        var list0 = Nil;
+        var list1 = Cons(1)(list0);
+        var list2 = Cons(2)(list1);
+        var list3 = Cons(3)(list2);
+
+        for (uint i = 0; i < 10; i++)
+        {
+            var replacedList = ReplaceAt(i.ToChurch())(4)(list3);
+
+            System.Collections.Generic.List<int> expected = [3, 2, 1];
+            if (i < 3)
+                expected[(int)i] = 4;
+            else
+                expected.Add(4);
+
+            Assert.Equal(expected, replacedList.UnChurch().Cast<int>());
+        }
     }
 
     [Fact]
